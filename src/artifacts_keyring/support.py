@@ -16,7 +16,7 @@ except ImportError:
 
 
 # *********************************************************
-# Import (and possible update) subprocess.Popen
+# Import (and possibly update) subprocess.Popen
 
 from subprocess import Popen
 
