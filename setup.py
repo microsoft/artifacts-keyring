@@ -36,11 +36,25 @@ def download_credential_provider(root):
 def get_version(root):
     src = os.path.join(root, "src", "artifacts_keyring", "__init__.py")
 
-    with open(src, "r", encoding="utf-8", errors="ignore") as f:
+    with open(src, "r", encoding="utf-8", errors="strict") as f:
         txt = f.read()
 
     m = re.search(r"__version__\s*=\s*['\"](.+?)['\"]", txt)
-    return m.group(1) if m else "0.1.0"
+
+    version = os.environ.get("BUILD_BUILDNUMBER")
+    if not version:
+        return m.group(1) if m else "0.1.0"
+
+    txt = re.sub(
+        r"__version__\s*=\s*['\"](.+?)['\"]",
+        '__version__ = "{}"'.format(version),
+        txt,
+    )
+
+    with open(src, "w", encoding="utf-8") as f:
+        print(txt, end="", file=f)
+
+    return version
 
 
 if __name__ == "__main__":
