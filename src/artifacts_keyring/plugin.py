@@ -23,6 +23,7 @@ class CredentialProvider(object):
                 os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
                     "plugins",
+                    "plugins",
                     "netfx",
                     "CredentialProvider.Microsoft",
                     "CredentialProvider.Microsoft.exe",
@@ -38,6 +39,7 @@ class CredentialProvider(object):
                 "exec",
                 os.path.join(
                     os.path.dirname(os.path.abspath(__file__)),
+                    "plugins",
                     "plugins",
                     "netcore",
                     "CredentialProvider.Microsoft",
@@ -115,28 +117,27 @@ class CredentialProvider(object):
         )
 
     def handshake(self):
-        while True:
-            req = self._read("Handshake")
-            if not req:
-                return
+        req = self._read("Handshake")
+        if not req:
+            return
 
-            if req["Type"] == "Request":
-                protocol = req["Payload"]["MinimumProtocolVersion"]
-                if protocol.startswith(("1.", "2.")):
-                    self.reply(req, ResponseCode="Success", ProtocolVersion="2.0.0")
-                    return True
-                else:
-                    self.reply(ResponseCode="Error")
+        if req["Type"] == "Request":
+            protocol = req["Payload"]["MinimumProtocolVersion"]
+            if protocol.startswith(("1.", "2.")):
+                self.reply(req, ResponseCode="Success", ProtocolVersion="2.0.0")
+                return True
+            else:
+                self.reply(ResponseCode="Error")
 
-                raise RuntimeError("Cannot negotiate protocol")
+            raise RuntimeError("Cannot negotiate protocol")
 
-            if req["Type"] == "Response":
-                if req["Payload"]["ResponseCode"] == "Success":
-                    return True
+        if req["Type"] == "Response":
+            if req["Payload"]["ResponseCode"] == "Success":
+                return True
 
-                raise RuntimeError(req["Payload"])
+            raise RuntimeError(req["Payload"])
 
-            raise RuntimeError(req)
+        raise RuntimeError(req)
 
     def initialize(self):
         self.send(
@@ -147,42 +148,38 @@ class CredentialProvider(object):
             ),
         )
 
-        while True:
-            req = self._read("Initialize")
-            if req is None:
-                raise RuntimeError("failed to initialize")
+        req = self._read("Initialize")
+        if req is None:
+            raise RuntimeError("failed to initialize")
 
-            if req["Type"] == "Response":
-                if req["Payload"]["ResponseCode"] == "Success":
-                    return True
+        if req["Type"] == "Response":
+            if req["Payload"]["ResponseCode"] == "Success":
+                return True
 
-                raise RuntimeError(req["Payload"])
+            raise RuntimeError(req["Payload"])
 
-            raise RuntimeError(req)
+        raise RuntimeError(req)
 
     def get_credentials(self, url, allow_prompt=False):
         self.send(
             Type="Request",
             Method="GetAuthenticationCredentials",
             Payload=dict(
-                uri=url,
+                Uri=url,
                 IsRetry=False,
-                IsNonInteractive=not allow_prompt,
+                NonInteractive=not allow_prompt,
                 CanShowDialog=allow_prompt,
             ),
         )
 
-        while True:
-            req = self._read("GetAuthenticationCredentials")
-            if not req:
-                raise RuntimeError("failed to get credentials")
-            elif req["Type"] == "Response":
-                payload = req["Payload"]
-                if payload["ResponseCode"] == "Success":
-                    return payload["Username"], payload["Password"]
-                elif payload["ResponseCode"] == "NotFound":
-                    return None, None
-                else:
-                    raise RuntimeError(payload["ResponseCode"])
+        req = self._read("GetAuthenticationCredentials")
+        if not req:
+            raise RuntimeError("failed to get credentials")
+        elif req["Type"] == "Response":
+            payload = req["Payload"]
+            if payload["ResponseCode"] == "Success":
+                return payload["Username"], payload["Password"]
+            elif payload["ResponseCode"] == "NotFound":
+                return None, None
             else:
-                break
+                raise RuntimeError(payload["ResponseCode"])
