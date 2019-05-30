@@ -21,7 +21,12 @@ import keyring.credentials
 
 
 class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
-    SUPPORTED_NETLOC = frozenset(("dev.azure.com", "pkgs.dev.azure.com"))
+    SUPPORTED_NETLOC = (
+        "pkgs.dev.azure.com",
+        "pkgs.visualstudio.com",
+        "pkgs.codedev.ms",
+        "pkgs.vsts.me"
+    )
     _PROVIDER = CredentialProvider
 
     priority = 10
@@ -42,11 +47,13 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
             return None
 
         netloc = parsed.netloc.rpartition("@")[-1]
-        if netloc not in self.SUPPORTED_NETLOC:
+
+        if netloc is None or not netloc.endswith(self.SUPPORTED_NETLOC):
             return None
 
-        with self._PROVIDER() as provider:
-            username, password = provider.get_credentials(service)
+        provider = self._PROVIDER()
+
+        username, password = provider.get_credentials(service)
 
         if username and password:
             self._cache[service, username] = password
