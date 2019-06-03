@@ -56,8 +56,7 @@ class CredentialProvider(object):
             ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True
+            stderr=subprocess.PIPE
         )
 
         outs = errs = None
@@ -74,10 +73,15 @@ class CredentialProvider(object):
             outs, errs = proc.communicate()
 
         if errs:
-            raise RuntimeError("Failed to get credentials: " + errs)
+            raise RuntimeError("Failed to get credentials: " + errs.decode("utf-8", "ignore"))
 
         try:
-            parsed = json.loads(outs)
+            payload = outs.decode("utf-8")
+        except ValueError:
+            raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be decoded using UTF-8.")
+
+        try:
+            parsed = json.loads(payload)
             return parsed["Username"], parsed["Password"]
         except ValueError:
             raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be parsed as JSON.")
