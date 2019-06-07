@@ -50,8 +50,8 @@ class CredentialProvider(object):
             self.exe + [
                 "-Uri", url,
                 "-IsRetry", "False",
-                "-NonInteractive", str(not allow_prompt),
-                "-CanShowDialog", str(allow_prompt),
+                "-NonInteractive", "False",
+                "-CanShowDialog", "False",
                 "-OutputFormat", "Json"
             ],
             stdin=subprocess.PIPE,
@@ -59,24 +59,24 @@ class CredentialProvider(object):
             stderr=subprocess.PIPE
         )
 
-        outs = errs = None
+        # Read all standard error first, which may either display
+        # errors from the credential provider or instructions
+        # from it for Device Flow authentication.
+        for stderr_line in iter(proc.stderr.readline, b''):
+            line = stderr_line.decode("utf-8", "ignore")
+            sys.stdout.write(line)
+            sys.stdout.flush()
 
-        if sys.version_info >= (3, 3):
-            try:
-                outs, errs = proc.communicate(timeout=10)
-            except subprocess.TimeoutExpired as e:
-                proc.kill()
-                outs, errs = proc.communicate()
-                raise e
-        else:
-            # Timeout was introduced in Python 3.3
-            outs, errs = proc.communicate()
+        proc.wait()
 
-        if errs:
-            raise RuntimeError("Failed to get credentials: " + errs.decode("utf-8", "ignore"))
+        if proc.returncode != 0:
+            stderr = proc.stderr.read().decode("utf-8", "ignore")
+            raise RuntimeError("Failed to get credentials: process with PID {pid} exited with code {code}; error: {error}"
+                .format(pid=proc.pid, code=proc.returncode, error=stderr))
 
         try:
-            payload = outs.decode("utf-8")
+            # stdout is expected to be UTF-8 encoded JSON, so decoding errors are not ignored here.
+            payload = proc.stdout.read().decode("utf-8")
         except ValueError:
             raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be decoded using UTF-8.")
 
