@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 __author__ = "Microsoft Corporation <python@microsoft.com>"
-__version__ = "0.2.1"
+__version__ = "0.2.4"
 
 import json
 import subprocess
