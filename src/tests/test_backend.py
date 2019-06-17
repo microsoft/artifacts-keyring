@@ -13,22 +13,18 @@ from artifacts_keyring import ArtifactsKeyringBackend
 import pytest
 
 # Shouldn't be accessed by tests, but needs to be able
-# to get pass the quick check.
+# to get past the quick check.
 SUPPORTED_HOST = "https://pkgs.dev.azure.com/"
 
 
 class FakeProvider(object):
-    def __enter__(self):
-        return self
-
-    def __exit__(self, ex_type, ex_value, ex_tb):
-        pass
-
     def get_credentials(self, service):
         return "user" + service[-4:], "pass" + service[-4:]
 
 
 class PasswordsBackend(keyring.backend.KeyringBackend):
+    priority = 9.9
+
     def __init__(self):
         self.passwords = {}
 
@@ -55,14 +51,19 @@ def only_backend():
 
 
 @pytest.fixture
-def passwords():
-    test_backend = PasswordsBackend()
-    backend = keyring.backends.chainer.ChainerBackend(
-        [ArtifactsKeyringBackend(), test_backend]
-    )
+def passwords(monkeypatch):
+    passwords_backend = PasswordsBackend()
+
+    def get_mock_backends():
+        return [ArtifactsKeyringBackend(), passwords_backend]
+
+    monkeypatch.setattr("keyring.backend.get_all_keyring", get_mock_backends)
+
+    chainer_backend = keyring.backends.chainer.ChainerBackend()
+
     previous = keyring.get_keyring()
-    keyring.set_keyring(backend)
-    yield test_backend.passwords
+    keyring.set_keyring(chainer_backend)
+    yield passwords_backend.passwords
     keyring.set_keyring(previous)
 
 
@@ -101,7 +102,7 @@ def test_set_password_fallback(passwords, fake_provider):
     assert keyring.get_credential(SUPPORTED_HOST + "1234", None).password == "pass1234"
 
 
-def test_delete_password_fallback(only_backend):
+def test_delete_password_raises(only_backend):
     with pytest.raises(NotImplementedError):
         keyring.delete_password("SYSTEM", "USERNAME")
 

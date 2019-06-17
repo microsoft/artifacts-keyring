@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 __author__ = "Microsoft Corporation <python@microsoft.com>"
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 
 import json
 import subprocess
@@ -29,7 +29,7 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
     )
     _PROVIDER = CredentialProvider
 
-    priority = 10
+    priority = 9.9
 
     def __init__(self):
         # In-memory cache of user-pass combination, to allow
