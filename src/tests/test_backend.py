@@ -7,8 +7,9 @@ import keyring
 import keyring.backend
 import keyring.backends.chainer
 import keyring.errors
+import requests
 
-from artifacts_keyring import ArtifactsKeyringBackend
+from artifacts_keyring import ArtifactsKeyringBackend, CredentialProvider
 
 import pytest
 
@@ -41,6 +42,10 @@ class PasswordsBackend(keyring.backend.KeyringBackend):
             raise keyring.errors.PasswordDeleteError(username)
 
 
+class MockGetResponse:
+    status_code = 200
+
+
 @pytest.fixture
 def only_backend():
     previous = keyring.get_keyring()
@@ -54,10 +59,10 @@ def only_backend():
 def passwords(monkeypatch):
     passwords_backend = PasswordsBackend()
 
-    def get_mock_backends():
+    def mock_get_all_keyring():
         return [ArtifactsKeyringBackend(), passwords_backend]
 
-    monkeypatch.setattr("keyring.backend.get_all_keyring", get_mock_backends)
+    monkeypatch.setattr(keyring.backend, "get_all_keyring", mock_get_all_keyring)
 
     chainer_backend = keyring.backends.chainer.ChainerBackend()
 
@@ -70,6 +75,22 @@ def passwords(monkeypatch):
 @pytest.fixture
 def fake_provider(monkeypatch):
     monkeypatch.setattr(ArtifactsKeyringBackend, "_PROVIDER", FakeProvider)
+
+
+@pytest.fixture
+def validating_provider(monkeypatch):
+    def mock_get_credentials(self, url, is_retry):
+        return url, is_retry
+
+    def mock_requests_get(url, auth):
+        response = MockGetResponse()
+        response.status_code = int(url[-3:])
+        return response
+
+    monkeypatch.setattr(CredentialProvider, "_get_credentials_from_credential_provider", mock_get_credentials)
+    monkeypatch.setattr(requests, "get", mock_requests_get)
+
+    yield CredentialProvider()
 
 
 def test_get_credential_unsupported_host(only_backend):
@@ -127,3 +148,20 @@ def test_cannot_delete_password(passwords, fake_provider):
 
     with pytest.raises(keyring.errors.PasswordDeleteError):
         keyring.delete_password(SUPPORTED_HOST + "1234", creds.username)
+
+
+def test_retry_on_invalid_credentials(validating_provider):
+    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "200")
+    assert password == False # credentials returned from single call with IsRetry=false
+
+    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "401")
+    assert password == True # credentials returned from second call with IsRetry=true
+
+    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "403")
+    assert password == True
+
+    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "500")
+    assert password == True
+
+    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "404")
+    assert password == False

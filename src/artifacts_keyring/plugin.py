@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 import json
 import os
+import requests
 import subprocess
 import sys
 
@@ -44,12 +45,37 @@ class CredentialProvider(object):
                     "CredentialProvider.Microsoft.dll",
                 ),
             ]
-    
-    def get_credentials(self, url, allow_prompt=False):
+
+
+    def get_credentials(self, url):
+        # Getting credentials with IsRetry=false; the credentials may come from the cache
+        username, password = self._get_credentials_from_credential_provider(url, is_retry=False)
+
+        # Do not attempt to validate if the credentials could not be obtained
+        if username is None or password is None:
+            return username, password
+
+        # Make sure the credentials are still valid (i.e. not expired)
+        if self._are_credentials_valid(url, username, password):
+            return username, password
+
+        # The cached credentials are expired; get fresh ones with IsRetry=true
+        return self._get_credentials_from_credential_provider(url, is_retry=True)
+
+
+    def _are_credentials_valid(self, url, username, password):
+        response = requests.get(url, auth=(username, password))
+
+        return response.status_code < 500 and \
+            response.status_code != 401 and \
+            response.status_code != 403
+
+
+    def _get_credentials_from_credential_provider(self, url, is_retry):
         proc = Popen(
             self.exe + [
                 "-Uri", url,
-                "-IsRetry", "False",
+                "-IsRetry", str(is_retry),
                 "-NonInteractive", "False",
                 "-CanShowDialog", "False",
                 "-OutputFormat", "Json"
@@ -85,3 +111,4 @@ class CredentialProvider(object):
             return parsed["Username"], parsed["Password"]
         except ValueError:
             raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be parsed as JSON.")
+
