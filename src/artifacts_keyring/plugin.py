@@ -10,6 +10,7 @@ import os
 import requests
 import subprocess
 import sys
+import warnings
 
 from . import __version__
 from .support import Popen
@@ -20,33 +21,38 @@ class CredentialProvider(object):
 
     def __init__(self):
         if sys.platform.startswith("win"):
-            self.exe = [
-                os.path.join(
-                    os.path.dirname(os.path.abspath(__file__)),
-                    "plugins",
-                    "plugins",
-                    "netfx",
-                    "CredentialProvider.Microsoft",
-                    "CredentialProvider.Microsoft.exe",
-                )
-            ]
+            tool_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "plugins",
+                "plugins",
+                "netfx",
+                "CredentialProvider.Microsoft",
+                "CredentialProvider.Microsoft.exe",
+            )
+            self.exe = [tool_path]
         else:
             try:
                 from dotnetcore2.runtime import get_runtime_path
-            except ImportError:
+            except ImportError as e:
+                message = (
+                    "Unable to find full dotnetcore2 runtime path;"
+                    " the tool will attempt with just 'dotnet' in case"
+                    " it is in the user-defined PATH variable. Error: "
+                )
+                warnings.warn(message + str(e))
                 get_runtime_path = lambda: "dotnet"
-            self.exe = [
-                get_runtime_path(),
-                "exec",
-                os.path.join(
-                    os.path.dirname(os.path.abspath(__file__)),
-                    "plugins",
-                    "plugins",
-                    "netcore",
-                    "CredentialProvider.Microsoft",
-                    "CredentialProvider.Microsoft.dll",
-                ),
-            ]
+            tool_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "plugins",
+                "plugins",
+                "netcore",
+                "CredentialProvider.Microsoft",
+                "CredentialProvider.Microsoft.dll",
+            )
+            self.exe = [get_runtime_path(), "exec", tool_path]
+
+        if not os.path.exists(tool_path):
+            raise RuntimeError("Unable to find credential provider in the expected path: " + tool_path)
 
 
     def get_credentials(self, url):
@@ -103,7 +109,7 @@ class CredentialProvider(object):
 
         if proc.returncode != 0:
             stderr = proc.stderr.read().decode("utf-8", "ignore")
-            raise RuntimeError("Failed to get credentials: process with PID {pid} exited with code {code}; error: {error}"
+            raise RuntimeError("Failed to get credentials: process with PID {pid} exited with code {code}; additional error message: {error}"
                 .format(pid=proc.pid, code=proc.returncode, error=stderr))
 
         try:
