@@ -16,6 +16,8 @@ from .support import Popen
 
 
 class CredentialProvider(object):
+    _NON_INTERACTIVE_VAR_NAME = "ARTIFACTS_KEYRING_DISABLE_INTERACTIVE_MODE"
+
     def __init__(self):
         if sys.platform.startswith("win"):
             self.exe = [
@@ -72,11 +74,15 @@ class CredentialProvider(object):
 
 
     def _get_credentials_from_credential_provider(self, url, is_retry):
+        non_interactive = self._NON_INTERACTIVE_VAR_NAME in os.environ and \
+            os.environ[self._NON_INTERACTIVE_VAR_NAME] and \
+            str(os.environ[self._NON_INTERACTIVE_VAR_NAME]).lower() == "true"
+
         proc = Popen(
             self.exe + [
                 "-Uri", url,
                 "-IsRetry", str(is_retry),
-                "-NonInteractive", "False",
+                "-NonInteractive", str(non_interactive),
                 "-CanShowDialog", "False",
                 "-OutputFormat", "Json"
             ],

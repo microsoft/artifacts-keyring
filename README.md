@@ -17,6 +17,10 @@ uploading to your Azure Artifacts feed.
 To use this package directly, use `twine.get_credential` and provide your feed URL as the system
 requiring credentials. The username is optional, and the name that should be used will be returned.
 
+# Environment variables
+
+- `ARTIFACTS_KEYRING_DISABLE_INTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
