@@ -56,6 +56,11 @@ class CredentialProvider(object):
 
 
     def get_credentials(self, url):
+        # Public feed short circuit: return nothing if not getting credentials for the upload endpoint
+        # (which always requires auth) and the endpoint is public (can authenticate without credentials).
+        if not self._is_upload_endpoint(url) and self._can_authenticate(url, None):
+            return None, None
+
         # Getting credentials with IsRetry=false; the credentials may come from the cache
         username, password = self._get_credentials_from_credential_provider(url, is_retry=False)
 
@@ -64,15 +69,20 @@ class CredentialProvider(object):
             return username, password
 
         # Make sure the credentials are still valid (i.e. not expired)
-        if self._are_credentials_valid(url, username, password):
+        if self._can_authenticate(url, (username, password)):
             return username, password
 
         # The cached credentials are expired; get fresh ones with IsRetry=true
         return self._get_credentials_from_credential_provider(url, is_retry=True)
 
 
-    def _are_credentials_valid(self, url, username, password):
-        response = requests.get(url, auth=(username, password))
+    def _is_upload_endpoint(self, url):
+        url = url[: -1] if url[-1] == "/" else url
+        return url.endswith("pypi/upload")
+
+
+    def _can_authenticate(self, url, auth):
+        response = requests.get(url, auth=auth)
 
         return response.status_code < 500 and \
             response.status_code != 401 and \
