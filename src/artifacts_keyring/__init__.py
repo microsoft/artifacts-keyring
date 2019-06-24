@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 __author__ = "Microsoft Corporation <python@microsoft.com>"
-__version__ = "0.1"
+__version__ = "0.2.7"
 
 import json
 import subprocess
@@ -21,10 +21,16 @@ import keyring.credentials
 
 
 class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
-    SUPPORTED_NETLOC = frozenset(("dev.azure.com", "pkgs.dev.azure.com"))
+    SUPPORTED_NETLOC = (
+        "pkgs.dev.azure.com",
+        "pkgs.visualstudio.com",
+        "pkgs.codedev.ms",
+        "pkgs.vsts.me"
+    )
     _PROVIDER = CredentialProvider
 
-    priority = 10
+    priority = 9.9
+
 
     def __init__(self):
         # In-memory cache of user-pass combination, to allow
@@ -34,6 +40,7 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
         # around for longer than necessary.
         self._cache = {}
 
+
     def get_credential(self, service, username):
         try:
             parsed = urlsplit(service)
@@ -42,15 +49,18 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
             return None
 
         netloc = parsed.netloc.rpartition("@")[-1]
-        if netloc not in self.SUPPORTED_NETLOC:
+
+        if netloc is None or not netloc.endswith(self.SUPPORTED_NETLOC):
             return None
 
-        with self._PROVIDER() as provider:
-            username, password = provider.get_credentials(service)
+        provider = self._PROVIDER()
+
+        username, password = provider.get_credentials(service)
 
         if username and password:
             self._cache[service, username] = password
             return keyring.credentials.SimpleCredential(username, password)
+
 
     def get_password(self, service, username):
         password = self._cache.get((service, username), None)
@@ -63,9 +73,11 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
 
         return None
 
+
     def set_password(self, service, username, password):
         # Defer setting a password to the next backend
         raise NotImplementedError()
+
 
     def delete_password(self, service, username):
         # Defer deleting a password to the next backend
