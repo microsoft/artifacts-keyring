@@ -17,7 +17,7 @@ from .support import Popen
 
 
 class CredentialProvider(object):
-    _NON_INTERACTIVE_VAR_NAME = "ARTIFACTS_KEYRING_DISABLE_INTERACTIVE_MODE"
+    _NON_INTERACTIVE_VAR_NAME = "ARTIFACTS_KEYRING_NONINTERACTIVE_MODE"
 
     def __init__(self):
         if sys.platform.startswith("win"):

@@ -16,7 +16,7 @@ uploading to your Azure Artifacts feed.
 
 # Environment variables
 
-- `ARTIFACTS_KEYRING_DISABLE_INTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
+- `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
 
 # Contributing
 
