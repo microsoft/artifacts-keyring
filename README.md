@@ -27,7 +27,7 @@ To use `artifacts-keyring` to set up authentication between `pip`/`twine` and Az
 Once `artifacts-keyring` is installed, to publish a package, use the following `twine` command, replacing **<org_name>** and **<feed_name>** with your own:
 
 ```
-twine upload -r https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/upload <package_wheel_or_other_dist_format>
+twine upload --repository-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/upload <package_wheel_or_other_dist_format>
 ```
 
 ### Installing packages from an Azure Artifacts feed
