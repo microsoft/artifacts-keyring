@@ -38,7 +38,7 @@ pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_pa
 ```
 
 ## Advanced configuration
-The `artifacts-keyring` package is layered on top of our more robust [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider). Check out that link to the GitHub repo for more information on configuration options.
+The `artifacts-keyring` package is layered on top of our [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider). Check out that link to the GitHub repo for more information on configuration options.
 
 ### Environment variables
 
