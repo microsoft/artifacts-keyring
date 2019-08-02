@@ -16,7 +16,7 @@ import urllib.request
 
 CREDENTIAL_PROVIDER = (
     "https://github.com/Microsoft/artifacts-credprovider/releases/download/"
-    + "v0.1.7"
+    + "0.1.17"
     + "/Microsoft.NuGet.CredentialProvider.tar.gz"
 )
 
@@ -25,12 +25,12 @@ def download_credential_provider(root):
     dest = os.path.join(root, "src", "artifacts_keyring", "plugins")
 
     if not os.path.isdir(dest):
-        print("Downloading and extracting to", dest)
         os.makedirs(dest)
 
-        with urllib.request.urlopen(CREDENTIAL_PROVIDER) as fileobj:
-            tar = tarfile.open(mode="r|gz", fileobj=fileobj)
-            tar.extractall(dest)
+    print("Downloading and extracting to", dest)
+    with urllib.request.urlopen(CREDENTIAL_PROVIDER) as fileobj:
+        tar = tarfile.open(mode="r|gz", fileobj=fileobj)
+        tar.extractall(dest)
 
 
 def get_version(root):

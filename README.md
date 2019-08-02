@@ -1,25 +1,50 @@
 # artifacts-keyring
-Provides authentication for [Azure DevOps](https://azure.com/devops) via the `keyring` library
+The `artifacts-keyring` package provides authentication for publishing or consuming Python packages to or from Azure Artifacts feeds within [Azure DevOps](https://azure.com/devops).
 
-This is an extension to [keyring](https://pypi.org/project/keyring), and will automatically be loaded.
+This package is an extension to [keyring](https://pypi.org/project/keyring), which will automatically find and use it once installed.
+
 Both [pip](https://pypi.org/project/pip) and [twine](https://pypi.org/project/twine) will use `keyring` to
 find credentials.
 
-To install this package:
+## Installation
+
+To install this package, run the following `pip` command:
 
 ```
 pip install artifacts-keyring
 ```
 
-To use this package through `pip` or `twine`, just provide your repository URL when installing or
-uploading to your Azure Artifacts feed.
+## Usage
 
-To use this package directly, use `twine.get_credential` and provide your feed URL as the system
-requiring credentials. The username is optional, and the name that should be used will be returned.
+### Requirements
 
-**Note:** The required updates to `pip` and `twine` have not yet been released.
+To use `artifacts-keyring` to set up authentication between `pip`/`twine` and Azure Artifacts, the following requirements must be met:
 
-# Contributing
+* pip version **19.2** or higher
+* twine version **1.13.0** or higher
+
+### Publishing packages to an Azure Artifacts feed
+Once `artifacts-keyring` is installed, to publish a package, use the following `twine` command, replacing **<org_name>** and **<feed_name>** with your own:
+
+```
+twine upload --repository-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/upload <package_wheel_or_other_dist_format>
+```
+
+### Installing packages from an Azure Artifacts feed
+Once `artifacts-keyring` is installed, to consume a package, use the following `pip` command, replacing **<org_name>** and **<feed_name>** with your own, and **<package_name>** with the package you want to install:
+
+```
+pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/simple
+```
+
+## Advanced configuration
+The `artifacts-keyring` package is layered on top of our [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider). Check out that link to the GitHub repo for more information on configuration options.
+
+### Environment variables
+
+- `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
