@@ -37,7 +37,7 @@ class CredentialProvider(object):
                 message = (
                     "Unable to find dependency dotnetcore2; the tool will"
                     " attempt to call 'dotnet' directly. If unable to install"
-                    " the dotnetcore2 Python package, please install manually"
+                    " the dotnetcore2 Python package, please manually install"
                     " the .NET Core runtime and ensure 'dotnet' is in your PATH. Error: "
                 )
                 warnings.warn(message + str(e))
