@@ -14,7 +14,7 @@ find credentials.
 To install this package, run the following `pip` command:
 
 ```
-pip install artifacts-keyring --pre
+pip install artifacts-keyring
 ```
 
 ## Usage

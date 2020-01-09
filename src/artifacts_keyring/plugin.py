@@ -35,9 +35,10 @@ class CredentialProvider(object):
                 from dotnetcore2.runtime import get_runtime_path
             except ImportError as e:
                 message = (
-                    "Unable to find full dotnetcore2 runtime path;"
-                    " the tool will attempt with just 'dotnet' in case"
-                    " it is in the user-defined PATH variable. Error: "
+                    "Unable to find dependency dotnetcore2; the tool will"
+                    " attempt to call 'dotnet' directly. If unable to install"
+                    " the dotnetcore2 Python package, please install manually"
+                    " the .NET Core runtime and ensure 'dotnet' is in your PATH. Error: "
                 )
                 warnings.warn(message + str(e))
                 get_runtime_path = lambda: "dotnet"
