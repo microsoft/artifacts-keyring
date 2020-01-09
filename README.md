@@ -1,7 +1,5 @@
 # artifacts-keyring
 
-**Note:** This tool is currently in public preview.
-
 The `artifacts-keyring` package provides authentication for publishing or consuming Python packages to or from Azure Artifacts feeds within [Azure DevOps](https://azure.com/devops).
 
 This package is an extension to [keyring](https://pypi.org/project/keyring), which will automatically find and use it once installed.
@@ -14,7 +12,7 @@ find credentials.
 To install this package, run the following `pip` command:
 
 ```
-pip install artifacts-keyring --pre
+pip install artifacts-keyring
 ```
 
 ## Usage
