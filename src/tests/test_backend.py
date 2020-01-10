@@ -84,7 +84,7 @@ def validating_provider(monkeypatch):
 
     def mock_requests_get(url, auth):
         response = MockGetResponse()
-        response.status_code = int(url[-3:])
+        response.status_code = int(url[:3])
         return response
 
     monkeypatch.setattr(CredentialProvider, "_get_credentials_from_credential_provider", mock_get_credentials)
@@ -151,17 +151,20 @@ def test_cannot_delete_password(passwords, fake_provider):
 
 
 def test_retry_on_invalid_credentials(validating_provider):
-    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "200")
-    assert password == False # credentials returned from single call with IsRetry=false
+     # No credentials returned when it can already authenticate without them
+    username, password = validating_provider.get_credentials("200" + SUPPORTED_HOST)
+    assert username == None and password == None
 
-    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "401")
-    assert password == True # credentials returned from second call with IsRetry=true
-
-    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "403")
-    assert password == True
-
-    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "500")
-    assert password == True
-
-    username, password = validating_provider.get_credentials(SUPPORTED_HOST + "404")
+    # Credentials returned from first call with IsRetry=false
+    username, password = validating_provider.get_credentials("200" + SUPPORTED_HOST + "pypi/upload")
     assert password == False
+
+    # Credentials returned from second call with IsRetry=true
+    username, password = validating_provider.get_credentials("401" + SUPPORTED_HOST)
+    assert password == True
+
+    username, password = validating_provider.get_credentials("403" + SUPPORTED_HOST)
+    assert password == True
+
+    username, password = validating_provider.get_credentials("500" + SUPPORTED_HOST)
+    assert password == True
