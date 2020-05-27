@@ -7,10 +7,12 @@ from __future__ import absolute_import
 
 import json
 import os
+import packaging.version
 import requests
 import subprocess
 import sys
 import warnings
+import shutil
 
 from . import __version__
 from .support import Popen
@@ -31,8 +33,16 @@ class CredentialProvider(object):
             )
             self.exe = [tool_path]
         else:
+            sys_version, dotnetcore2version = None, None
+            if shutil.which("dotnet"):
+                try:
+                    sys_version = packaging.version.parse(
+                        subprocess.check_output([shutil.which("dotnet"), "--version"]).decode().strip())
+                except:
+                    pass
             try:
-                from dotnetcore2.runtime import get_runtime_path
+                from dotnetcore2.runtime import get_runtime_path, __version__ as runtime2version
+                dotnetcore2version = packaging.version.parse(runtime2version)
             except ImportError as e:
                 message = (
                     "Unable to find dependency dotnetcore2; the tool will"
@@ -42,6 +52,12 @@ class CredentialProvider(object):
                 )
                 warnings.warn(message + str(e))
                 get_runtime_path = lambda: "dotnet"
+
+            if sys_version and dotnetcore2version:
+                if sys_version > dotnetcore2version:
+                    warnings.warn("Choosing system dotnet over dotnetcore2 one since it is newer.")
+                    get_runtime_path = lambda: shutil.which('dotnet')
+
             tool_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
                 "plugins",
