@@ -33,8 +33,8 @@ class CredentialProvider(object):
             self.exe = [tool_path]
         else:
             try:
-                sys_version = tuple(int(i) for i in 
-                    subprocess.check_output("dotnet --version").decode().strip().partition("-")[0].split("."))
+                sys_version = tuple(int(i) for i in
+                    subprocess.check_output(["dotnet", "--version"]).decode().strip().partition("-")[0].split("."))
             except Exception:
                 sys_version = None
             try:
