@@ -11,6 +11,7 @@ import requests
 import subprocess
 import sys
 import warnings
+import shutil
 
 from . import __version__
 from .support import Popen
@@ -32,7 +33,19 @@ class CredentialProvider(object):
             self.exe = [tool_path]
         else:
             try:
-                from dotnetcore2.runtime import get_runtime_path
+                sys_version = tuple(int(i) for i in
+                    subprocess.check_output(["dotnet", "--version"]).decode().strip().partition("-")[0].split("."))
+            except Exception:
+                sys_version = None
+            try:
+                from dotnetcore2.runtime import get_runtime_path, __version__ as runtime2version
+                try:
+                    dotnetcore2version = tuple(int(i) for i in runtime2version.split("."))
+                    if sys_version and sys_version > dotnetcore2version:
+                        warnings.warn("Using system 'dotnet' with later version than dotnetcore2 package")
+                        get_runtime_path = lambda: "dotnet"
+                except Exception:
+                    pass
             except ImportError as e:
                 message = (
                     "Unable to find dependency dotnetcore2; the tool will"
@@ -42,6 +55,7 @@ class CredentialProvider(object):
                 )
                 warnings.warn(message + str(e))
                 get_runtime_path = lambda: "dotnet"
+
             tool_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
                 "plugins",
@@ -134,4 +148,3 @@ class CredentialProvider(object):
             return parsed["Username"], parsed["Password"]
         except ValueError:
             raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be parsed as JSON.")
-
