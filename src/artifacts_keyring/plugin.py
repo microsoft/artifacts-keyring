@@ -41,7 +41,7 @@ class CredentialProvider(object):
                     "Unable to find dependency dotnet, please manually install"
                     " the .NET Core runtime and ensure 'dotnet' is in your PATH. Error: "
                 )
-                # raise Exception(message + str(e))
+                raise Exception(message + str(e))
 
             tool_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
