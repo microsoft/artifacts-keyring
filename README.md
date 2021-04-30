@@ -1,3 +1,9 @@
+## NOTE
+'artifacts-keyring' is a relatively thin wrapper around [artifacts-credprovider](https://github.com/microsoft/artifacts-credprovider).  Make sure to also look at that repository for more information about different scenarios. For example:
+
+* [Environment variable to explicitly override tokens](https://github.com/microsoft/artifacts-credprovider)
+* [Safely using credentials in docker](https://github.com/dotnet/dotnet-docker/blob/master/documentation/scenarios/nuget-credentials.md#using-the-azure-artifact-credential-provider)
+
 # artifacts-keyring
 
 The `artifacts-keyring` package provides authentication for publishing or consuming Python packages to or from Azure Artifacts feeds within [Azure DevOps](https://azure.com/devops).
