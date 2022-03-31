@@ -39,7 +39,7 @@ class CredentialProvider(object):
             except Exception as e:
                 message = (
                     "Unable to find dependency dotnet, please manually install"
-                    " the .NET Core runtime and ensure 'dotnet' is in your PATH. Error: "
+                    " the .NET SDK and ensure 'dotnet' is in your PATH. Error: "
                 )
                 raise Exception(message + str(e))
 
