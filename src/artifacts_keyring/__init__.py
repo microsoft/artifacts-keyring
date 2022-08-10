@@ -6,11 +6,8 @@
 from __future__ import absolute_import
 
 __author__ = "Microsoft Corporation <python@microsoft.com>"
-__version__ = "0.3.4"
+__version__ = "1.0.0"
 
-import json
-import subprocess
-import sys
 import warnings
 
 from .support import urlsplit
@@ -25,12 +22,11 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
         "pkgs.dev.azure.com",
         "pkgs.visualstudio.com",
         "pkgs.codedev.ms",
-        "pkgs.vsts.me"
+        "pkgs.vsts.me",
     )
     _PROVIDER = CredentialProvider
 
     priority = 9.9
-
 
     def __init__(self):
         # In-memory cache of user-pass combination, to allow
@@ -39,7 +35,6 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
         # pop from this cache to avoid keeping the value
         # around for longer than necessary.
         self._cache = {}
-
 
     def get_credential(self, service, username):
         try:
@@ -53,32 +48,49 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
         if netloc is None or not netloc.endswith(self.SUPPORTED_NETLOC):
             return None
 
+        cached = self._cache.setdefault(service, {})
+
         provider = self._PROVIDER()
 
-        username, password = provider.get_credentials(service)
+        cred = provider.get_credentials(
+            service,
+            cached
+            if username is None
+            else {key: value for key, value in cached.items() if key == username},
+        )
 
-        if username and password:
-            self._cache[service, username] = password
+        if all(cred):
+            _, password = cred
+
+            if cred[0] == username:
+                self._cache[service][username] = password
+            else:
+                username, _ = cred
+
             return keyring.credentials.SimpleCredential(username, password)
 
-
     def get_password(self, service, username):
-        password = self._cache.get((service, username), None)
+        password = self._cache.get(service, {}).pop(username, None)
         if password is not None:
             return password
 
-        creds = self.get_credential(service, None)
-        if creds and username == creds.username:
-            return creds.password
+        # Fills the cache
+        self.get_credential(service, username)
+
+        # Empties the cache if username matches
+        password = self._cache.get(service, {}).pop(username, None)
+        if password is not None:
+            return password
 
         return None
-
 
     def set_password(self, service, username, password):
         # Defer setting a password to the next backend
         raise NotImplementedError()
 
-
     def delete_password(self, service, username):
+        # Try and remove it from the cache out of an abundance of caution
+        self._cache.get(service, {}).pop(username, None)
+
         # Defer deleting a password to the next backend
         raise NotImplementedError()
