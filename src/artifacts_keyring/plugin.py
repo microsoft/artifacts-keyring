@@ -41,6 +41,7 @@ class CredentialProvider(object):
 
                 def get_runtime_path():
                     return "dotnet"
+
             except Exception as e:
                 message = (
                     "Unable to find dependency dotnet, please manually install"
