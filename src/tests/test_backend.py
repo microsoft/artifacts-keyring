@@ -10,13 +10,13 @@ import keyring.errors
 import requests
 
 from artifacts_keyring import ArtifactsKeyringBackend, CredentialProvider
+from artifacts_keyring import NoDotnetFoundException, PyMSALCredentialProvider
 
 import pytest
 
 # Shouldn't be accessed by tests, but needs to be able
 # to get past the quick check.
 SUPPORTED_HOST = "https://pkgs.dev.azure.com/"
-
 
 class FakeProvider(object):
     def get_credentials(self, service):
@@ -79,19 +79,25 @@ def fake_provider(monkeypatch):
 
 @pytest.fixture
 def validating_provider(monkeypatch):
-    def mock_get_credentials(self, url, is_retry):
-        return url, is_retry
-
     def mock_requests_get(url, auth):
         response = MockGetResponse()
         response.status_code = int(url[:3])
         return response
 
-    monkeypatch.setattr(CredentialProvider, "_get_credentials_from_credential_provider", mock_get_credentials)
+    def mock_get_credentials(self, url, is_retry):
+        return url, is_retry
+    
+    try:
+        monkeypatch.setattr(CredentialProvider, 
+            "_get_credentials_from_credential_provider", mock_get_credentials)
+        provier = CredentialProvider()
+    except NoDotnetFoundException:
+        monkeypatch.setattr(PyMSALCredentialProvider, 
+            "_get_credentials_from_credential_provider", mock_get_credentials)
+        provider = PyMSALCredentialProvider()
+
     monkeypatch.setattr(requests, "get", mock_requests_get)
-
-    yield CredentialProvider()
-
+    yield provider
 
 def test_get_credential_unsupported_host(only_backend):
     assert keyring.get_credential("https://example.com", None) == None
@@ -151,7 +157,7 @@ def test_cannot_delete_password(passwords, fake_provider):
 
 
 def test_retry_on_invalid_credentials(validating_provider):
-     # No credentials returned when it can already authenticate without them
+    # No credentials returned when it can already authenticate without them
     username, password = validating_provider.get_credentials("200" + SUPPORTED_HOST)
     assert username == None and password == None
 
