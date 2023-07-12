@@ -102,7 +102,8 @@ class CredentialProvider(object):
                 "-IsRetry", str(is_retry),
                 "-NonInteractive", str(non_interactive),
                 "-CanShowDialog", "False",
-                "-OutputFormat", "Json"
+                "-OutputFormat", "Json",
+                "-Verbosity", "Minimal"
             ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
