@@ -16,7 +16,7 @@ import urllib.request
 
 CREDENTIAL_PROVIDER = (
     "https://github.com/Microsoft/artifacts-credprovider/releases/download/"
-    + "v1.0.7"
+    + "v1.0.8"
     + "/Microsoft.NuGet.CredentialProvider.tar.gz"
     )
 
