@@ -16,7 +16,7 @@ import urllib.request
 
 CREDENTIAL_PROVIDER = (
     "https://github.com/Microsoft/artifacts-credprovider/releases/download/"
-    + "v1.0.8"
+    + "v1.0.9"
     + "/Microsoft.NuGet.CredentialProvider.tar.gz"
     )
 
@@ -40,21 +40,7 @@ def get_version(root):
         txt = f.read()
 
     m = re.search(r"__version__\s*=\s*['\"](.+?)['\"]", txt)
-
-    version = os.environ.get("BUILD_BUILDNUMBER")
-    if not version:
-        return m.group(1) if m else "0.1.0"
-
-    txt = re.sub(
-        r"__version__\s*=\s*['\"](.+?)['\"]",
-        '__version__ = "{}"'.format(version),
-        txt,
-    )
-
-    with open(src, "w", encoding="utf-8") as f:
-        print(txt, end="", file=f)
-
-    return version
+    return m.group(1) if m else "0.1.0"
 
 
 if __name__ == "__main__":
