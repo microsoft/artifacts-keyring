@@ -19,7 +19,8 @@ SUPPORTED_HOST = "https://pkgs.dev.azure.com/"
 
 
 class FakeProvider(object):
-    def get_credentials(self, service):
+    @staticmethod
+    def get_credentials(service, username):
         return "user" + service[-4:], "pass" + service[-4:]
 
 
@@ -87,14 +88,18 @@ def validating_provider(monkeypatch):
         response.status_code = int(url[:3])
         return response
 
-    monkeypatch.setattr(CredentialProvider, "_get_credentials_from_credential_provider", mock_get_credentials)
+    monkeypatch.setattr(
+        CredentialProvider,
+        "_get_credentials_from_credential_provider",
+        mock_get_credentials,
+    )
     monkeypatch.setattr(requests, "get", mock_requests_get)
 
     yield CredentialProvider()
 
 
 def test_get_credential_unsupported_host(only_backend):
-    assert keyring.get_credential("https://example.com", None) == None
+    assert keyring.get_credential("https://example.com", None) is None
 
 
 def test_get_credential(only_backend, fake_provider):
@@ -151,20 +156,30 @@ def test_cannot_delete_password(passwords, fake_provider):
 
 
 def test_retry_on_invalid_credentials(validating_provider):
-     # No credentials returned when it can already authenticate without them
-    username, password = validating_provider.get_credentials("200" + SUPPORTED_HOST)
-    assert username == None and password == None
+    # No credentials returned when it can already authenticate without them
+    username, password = validating_provider.get_credentials(
+        "200" + SUPPORTED_HOST, {}
+    )
+    assert username is None and password is None
 
     # Credentials returned from first call with IsRetry=false
-    username, password = validating_provider.get_credentials("200" + SUPPORTED_HOST + "pypi/upload")
-    assert password == False
+    username, password = validating_provider.get_credentials(
+        "200" + SUPPORTED_HOST + "pypi/upload", {}
+    )
+    assert password is False
 
     # Credentials returned from second call with IsRetry=true
-    username, password = validating_provider.get_credentials("401" + SUPPORTED_HOST)
-    assert password == True
+    username, password = validating_provider.get_credentials(
+        "401" + SUPPORTED_HOST, {}
+    )
+    assert password is True
 
-    username, password = validating_provider.get_credentials("403" + SUPPORTED_HOST)
-    assert password == True
+    username, password = validating_provider.get_credentials(
+        "403" + SUPPORTED_HOST, {}
+    )
+    assert password is True
 
-    username, password = validating_provider.get_credentials("500" + SUPPORTED_HOST)
-    assert password == True
+    username, password = validating_provider.get_credentials(
+        "500" + SUPPORTED_HOST, {}
+    )
+    assert password is True
