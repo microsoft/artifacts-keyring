@@ -33,9 +33,10 @@ class CredentialProvider(object):
             self.exe = [tool_path]
         else:
             try:
-                sys_version = tuple(int(i) for i in
-                    subprocess.check_output(["dotnet", "--list-runtimes"]).decode().strip().partition("-")[0].split("."))
-                get_runtime_path = lambda: "dotnet"
+                # check to see if any dotnet runtimes are installed. Not checking specific versions.
+                output = subprocess.check_output(["dotnet", "--list-runtimes"]).decode().strip()
+                if(len(output) == 0):
+                    raise Exception("No dotnet runtime found.")
             except Exception as e:
                 message = (
                     "Unable to find dependency dotnet, please manually install"
@@ -51,7 +52,7 @@ class CredentialProvider(object):
                 "CredentialProvider.Microsoft",
                 "CredentialProvider.Microsoft.dll",
             )
-            self.exe = [get_runtime_path(), "exec", tool_path]
+            self.exe = ["dotnet", "exec", tool_path]
 
         if not os.path.exists(tool_path):
             raise RuntimeError("Unable to find credential provider in the expected path: " + tool_path)
