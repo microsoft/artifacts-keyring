@@ -34,12 +34,12 @@ class CredentialProvider(object):
         else:
             try:
                 sys_version = tuple(int(i) for i in
-                    subprocess.check_output(["dotnet", "--version"]).decode().strip().partition("-")[0].split("."))
+                    subprocess.check_output(["dotnet", "--list-runtimes"]).decode().strip().partition("-")[0].split("."))
                 get_runtime_path = lambda: "dotnet"
             except Exception as e:
                 message = (
                     "Unable to find dependency dotnet, please manually install"
-                    " the .NET SDK and ensure 'dotnet' is in your PATH. Error: "
+                    " the .NET runtime and ensure 'dotnet' is in your PATH. Error: "
                 )
                 raise Exception(message + str(e))
 
