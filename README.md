@@ -30,7 +30,7 @@ To use `artifacts-keyring` to set up authentication between `pip`/`twine` and Az
 * pip version **19.2** or higher
 * twine version **1.13.0** or higher
 * python version **3.0** or higher
-* .Net SDK is installed. Refer to [here](https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu) for installation guideline.
+* .Net runtime 6.0.X or later is installed. Refer to [here](https://learn.microsoft.com/dotnet/core/install/) for installation guideline.
 
 ### Publishing packages to an Azure Artifacts feed
 Once `artifacts-keyring` is installed, to publish a package, use the following `twine` command, replacing **<org_name>** and **<feed_name>** with your own:
