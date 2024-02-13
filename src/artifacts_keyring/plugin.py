@@ -36,7 +36,7 @@ class CredentialProvider(object):
                 # check to see if any dotnet runtimes are installed. Not checking specific versions.
                 output = subprocess.check_output(["dotnet", "--list-runtimes"]).decode().strip()
                 if(len(output) == 0):
-                    raise Exception("No dotnet runtime found.")
+                    raise Exception("No dotnet runtime found. Refer to https://learn.microsoft.com/dotnet/core/install/ for installation guidelines.")
             except Exception as e:
                 message = (
                     "Unable to find dependency dotnet, please manually install"
