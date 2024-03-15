@@ -16,6 +16,8 @@ import shutil
 from . import __version__
 from .support import Popen
 
+class NoDotnetFoundException(Exception):
+    pass
 
 class CredentialProvider(object):
     _NON_INTERACTIVE_VAR_NAME = "ARTIFACTS_KEYRING_NONINTERACTIVE_MODE"
@@ -42,7 +44,7 @@ class CredentialProvider(object):
                     "Unable to find dependency dotnet, please manually install"
                     " the .NET runtime and ensure 'dotnet' is in your PATH. Error: "
                 )
-                raise Exception(message + str(e))
+                raise NoDotnetFoundException(message + str(e))
 
             tool_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),

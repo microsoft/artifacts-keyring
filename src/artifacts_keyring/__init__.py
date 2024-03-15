@@ -14,7 +14,8 @@ import sys
 import warnings
 
 from .support import urlsplit
-from .plugin import CredentialProvider
+from .plugin import CredentialProvider, NoDotnetFoundException
+from .py_msal_credential_provider import PyMSALCredentialProvider
 
 import keyring.backend
 import keyring.credentials
@@ -28,6 +29,7 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
         "pkgs.vsts.me"
     )
     _PROVIDER = CredentialProvider
+    _PY_MSAL_PROVIDER = PyMSALCredentialProvider
 
     priority = 9.9
 
@@ -53,7 +55,11 @@ class ArtifactsKeyringBackend(keyring.backend.KeyringBackend):
         if netloc is None or not netloc.endswith(self.SUPPORTED_NETLOC):
             return None
 
-        provider = self._PROVIDER()
+        # provider = self._PROVIDER()
+        try:
+            provider = self._PROVIDER()
+        except NoDotnetFoundException:
+            provider = self._PY_MSAL_PROVIDER()
 
         username, password = provider.get_credentials(service)
 
