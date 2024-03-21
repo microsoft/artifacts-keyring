@@ -15,13 +15,49 @@ find credentials.
 
 ## Installation
 
-To install this package, run the following `pip` command:
+As of version 23.1 Pip can use the `keyring` as a command line application in addition to importing it as a python library.
+This allows one to install keyring such that it can be found on the PATH.
+Go to [Pip's Authentication documentation](https://pip.pypa.io/en/stable/topics/authentication/#) for up-to-date information on all Pip's authentication abilities.
+
+The CLI is a one time installation, assuming one of the following is true:
+- The `virtualenv` cli/library is (indirectly) used to create new virtual environments.
+- You only use Python versions new enough that the following returns 23.1 or higher.
+  ```
+  python -m venv .venv
+  .venv/Scripts/pip.exe --version
+  ```
+
+### Common
+If you don't want to/can supply the private index url for each command there are two alternatives:
+- run `pip config set global.index-url <your URL here>`. To configure once for all users add the `--global` flag.
+- Set environment variable `PIP_INDEX_URL` to you url.
+
+The same applies to extra index urls. `PIP_EXTRA_INDEX_URL` is the name of the environment variable and `global.extra-index-url` is the value to provide `pip config set`.
+
+### Install via pipx as a CLI
+```powershell
+#powershell
+python -m venv temp
+. ./Scripts/activate.ps1
+$global = Read-Host "To install for current user only, press enter. To install for all users, which requires admin permissions, type '--global' (no quotes)"
+pip config set global.keyring-provider subprocess $global
+pip install pipx --index https://pypi.org/simple/
+pipx install pipx
+pipx ensurepath
+rmdir temp
+exit
+```
+
+To install this package, for every new python environment, run the following `pip` command:
 
 ```
-pip install artifacts-keyring
+pip install artifacts-keyring --index https://pypi.org/simple/
 ```
 
 ## Usage
+
+When using keyring via the CLI (provider `subprocess`) you MUST use `VssSessionToken` as the username component in the url.
+For the `import` provider that should not be required, unless a very old version of the `keyring` package is installed. 
 
 ### Requirements
 
