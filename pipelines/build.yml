@@ -1,0 +1,17 @@
+steps:
+- task: PipAuthenticate@1
+  displayName: 'Pip authenticate'
+  inputs:
+    artifactFeeds: 'PipelineTools/artifacts-credprovider'
+- script: pip install build
+  displayName: 'Install dependencies'
+- script: |
+    python -m build --outdir $(Build.ArtifactStagingDirectory)\Keyring
+  displayName: 'Generate package'
+
+- ${{ if eq(parameters.publish, 'true') }}:
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Artifact $(Build.BuildNumber)
+    inputs:
+      artifact: '$(Build.BuildNumber)'
+      targetPath: '$(Build.ArtifactStagingDirectory)\Keyring'

@@ -1,0 +1,19 @@
+schedules:
+- cron: "0 0 * * SAT"
+  displayName: CodeQL Saturday midnight (UTC) scan
+  always: true
+  branches:
+    include: 
+    - master
+
+resources:
+- repo: self
+
+pool:
+  vmImage: windows-latest
+
+trigger:
+- master
+
+steps:
+- template: build/build.yml
