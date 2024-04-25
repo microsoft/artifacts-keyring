@@ -1,5 +1,4 @@
 steps:
-- checkout: artifacts_keyring
 - task: PipAuthenticate@1
   displayName: 'Pip authenticate'
   inputs:
