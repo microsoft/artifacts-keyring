@@ -1,3 +1,11 @@
+schedules:
+- cron: "0 0 * * SAT"
+  displayName: CodeQL Saturday midnight (UTC) scan
+  always: true
+  branches:
+    include: 
+    - master
+
 resources:
 - repo: self
 
