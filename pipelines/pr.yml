@@ -1,0 +1,10 @@
+resources:
+- repo: self
+
+pool:
+  vmImage: windows-latest
+
+trigger: none
+
+steps:
+- template: build/build.yml
