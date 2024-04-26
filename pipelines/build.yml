@@ -1,3 +1,8 @@
+parameters:
+- name: 'publish'
+  type: boolean
+  default: false
+
 steps:
 - task: PipAuthenticate@1
   displayName: 'Pip authenticate'

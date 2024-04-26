@@ -16,4 +16,6 @@ trigger:
 - master
 
 steps:
-- template: build/build.yml
+- template: build.yml
+  parameters:
+    publish: true

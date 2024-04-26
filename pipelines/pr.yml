@@ -7,4 +7,6 @@ pool:
 trigger: none
 
 steps:
-- template: build/build.yml
+- template: build.yml
+  parameters:
+      publish: false
