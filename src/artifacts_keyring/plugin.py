@@ -115,8 +115,8 @@ class CredentialProvider(object):
         # from it for Device Flow authentication.
         for stderr_line in iter(proc.stderr.readline, b''):
             line = stderr_line.decode("utf-8", "ignore")
-            sys.stdout.write(line)
-            sys.stdout.flush()
+            sys.stderr.write(line)
+            sys.stderr.flush()
 
         proc.wait()
 
