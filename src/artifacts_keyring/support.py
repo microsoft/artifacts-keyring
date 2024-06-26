@@ -9,6 +9,7 @@
 # *********************************************************
 # Import the correct urlsplit function
 
+import os
 try:
     from urllib.parse import urlsplit
 except ImportError:
@@ -34,6 +35,7 @@ if not hasattr(Popen, "__enter__"):
 
 import logging
 from azure.identity import (
+    AzureCliCredential,
     DeviceCodeCredential,
     DefaultAzureCredential,
     ChainedTokenCredential
@@ -50,12 +52,22 @@ class DefaultAzureCredentialWithDevicecode(ChainedTokenCredential):
         if client_id:
             devicecode_kwargs['client_id'] = client_id
         devicecode_credential = DeviceCodeCredential(**devicecode_kwargs)
+
+        # DEFAULT_IDENTITY_CLIENT_ID is a variable exposed in Azure ML Compute jobs that
+        # has the client id of the user-assigned managed identity in it.
+        # See https://learn.microsoft.com/en-us/azure/machine-learning/how-to-identity-based-service-authentication?view=azureml-api-2&tabs=cli#compute-cluster
+        # In case it's not set the ManagedIdentityCredential will default to using
+        # the system-assigned managed identity.
+        kwargs['managed_identity_client_id'] = os.environ.get("DEFAULT_IDENTITY_CLIENT_ID")
         
         # instantiate DefaultAzureCredential and get a list of the default credentials
         credentials = DefaultAzureCredential(*args, **kwargs).credentials
         credentials = list(credentials)
+
+        # prefer azure cli credential if available
+        credentials.insert(0, AzureCliCredential())
         
-        # append the devicecode credential to the list of defaults        
+        # append the devicecode credential to the list of defaults as last resort
         credentials.append(devicecode_credential)
 
         # instantiate self as a ChainedTokenCredential with the devicecode credential added
