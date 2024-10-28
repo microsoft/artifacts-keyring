@@ -54,6 +54,12 @@ The `artifacts-keyring` package is layered on top of our [Azure Artifacts Creden
 - `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
 - `ARTIFACTS_KEYRING_USE_NET8`: Controls whether or not to download the .NET 8 version of the Azure Artifacts Credential Provider.
 
+## Local development
+
+1. Install build dependencies with `pip install .`
+2. Build the project using `python -m build --outdir %DIRECTORY%`
+3. Open a new terminal window in `%DIRECTORY%`, then run `pip install ***.whl --force-reinstall`
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
