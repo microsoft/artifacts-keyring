@@ -22,6 +22,8 @@ class CredentialProvider(object):
 
     def __init__(self):
         if sys.platform.startswith("win"):
+            # by default, attempt to search netfx plugins folder.
+            # if that doesn't exist, search netcore for newer credprovider versions.
             tool_path = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
                 "plugins",
@@ -30,6 +32,16 @@ class CredentialProvider(object):
                 "CredentialProvider.Microsoft",
                 "CredentialProvider.Microsoft.exe",
             )
+
+            tool_path = tool_path if os.path.exists(tool_path) else os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "plugins",
+                "plugins",
+                "netcore",
+                "CredentialProvider.Microsoft",
+                "CredentialProvider.Microsoft.exe",
+            )
+
             self.exe = [tool_path]
         else:
             try:
@@ -56,7 +68,6 @@ class CredentialProvider(object):
 
         if not os.path.exists(tool_path):
             raise RuntimeError("Unable to find credential provider in the expected path: " + tool_path)
-
 
     def get_credentials(self, url):
         # Public feed short circuit: return nothing if not getting credentials for the upload endpoint
