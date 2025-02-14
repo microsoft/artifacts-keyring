@@ -7,20 +7,35 @@ from __future__ import absolute_import
 
 import json
 import os
+import ssl
+import truststore
 import requests
 import subprocess
 import sys
 import warnings
 import shutil
 
+from requests.adapters import HTTPAdapter
+
 from . import __version__
 from .support import Popen
+
+
+class TruststoreAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        ctx = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        return super().init_poolmanager(connections, maxsize, block, ssl_context=ctx)
 
 
 class CredentialProvider(object):
     _NON_INTERACTIVE_VAR_NAME = "ARTIFACTS_KEYRING_NONINTERACTIVE_MODE"
 
     def __init__(self):
+        self.session = requests.Session()
+        adapter = TruststoreAdapter()
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+
         if sys.platform.startswith("win"):
             # by default, attempt to search netfx plugins folder.
             # if that doesn't exist, search netcore for newer credprovider versions.
@@ -96,7 +111,7 @@ class CredentialProvider(object):
 
 
     def _can_authenticate(self, url, auth):
-        response = requests.get(url, auth=auth)
+        response = self.session.get(url, auth=auth)
 
         return response.status_code < 500 and \
             response.status_code != 401 and \
