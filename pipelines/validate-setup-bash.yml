@@ -1,3 +1,9 @@
+parameters:
+- name: repo
+  type: string
+- name: expectedCredentialProviderVersion
+  type: string
+
 steps:
 - checkout: ${{ parameters.repo }}
 - task: PipAuthenticate@1

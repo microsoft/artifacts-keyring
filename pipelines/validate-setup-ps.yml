@@ -1,8 +1,6 @@
 parameters:
 - name: repo
   type: string
-- name: scriptInputs
-  type: string
 - name: expectedCredentialProviderVersion
   type: string
 

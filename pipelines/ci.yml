@@ -12,10 +12,17 @@ resources:
 pool:
   vmImage: windows-latest
 
-trigger:
-- master
+stages:
+- stage: Build
+  dependsOn: [] 
+  jobs:
+  - job: build
+    steps:
+    - template: build.yml
+      parameters:
+        publish: true
 
-steps:
-- template: build.yml
-  parameters:
-    publish: true
+- stage: Validate
+  dependsOn: [] 
+  jobs:
+  - template: build/validate-setup.yml

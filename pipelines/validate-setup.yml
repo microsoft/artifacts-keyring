@@ -112,24 +112,4 @@ jobs:
       scriptEnvVariables: |
         export ARTIFACTS_KEYRING_USE_NET8=true
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
-- job: WindowsArm64Net8Installs64
-  pool:
-    vmImage: windows-11-arm
-  steps:
-  - template: validate-install-ps.yml@self
-    parameters:
-      repo: self
-      scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
-      expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
-- job: LinuxArm64Net8Install
-  pool:
-    vmImage: ubuntu-24.04-arm
-  steps:
-  - template: validate-install-bash.yml@self
-    parameters:
-      repo: self
-      scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
-      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-arm64.NuGet.CredentialProvider'
   

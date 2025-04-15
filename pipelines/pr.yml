@@ -1,12 +1,24 @@
+
 resources:
 - repo: self
 
 pool:
   vmImage: windows-latest
 
-trigger: none
+trigger:
+- master
 
-steps:
-- template: build.yml
-  parameters:
-      publish: false
+stages:
+- stage: Build
+  dependsOn: []
+  jobs:
+  - job: build
+    steps:
+    - template: build.yml
+      parameters:
+        publish: false
+
+- stage: Validate
+  dependsOn: []
+  jobs:
+  - template: build/validate-setup.yml
