@@ -53,6 +53,8 @@ The `artifacts-keyring` package is layered on top of our [Azure Artifacts Creden
 
 - `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
 - `ARTIFACTS_KEYRING_USE_NET8`: Controls whether or not to download the .NET 8 version of the Azure Artifacts Credential Provider.
+- `ARTIFACTS_CREDENTIAL_PROVIDER_RID`: Controls whether or not to download a specific runtime of the self-contained .NET 8 version of the Azure Artifacts Credential Provider.
+- `ARTIFACTS_KEYRING_NON_SELF_CONTAINED`: Controls whether or not to download the non-self-contained .NET 8 version of the Azure Artifacts Credential Provider.
 
 ## Local development
 

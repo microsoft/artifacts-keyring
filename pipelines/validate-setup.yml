@@ -1,0 +1,135 @@
+jobs:
+- job: WindowsInstallDefault
+  pool:
+    vmImage: windows-latest
+  steps:
+  - template: validate-install-ps.yml@self
+    parameters:
+      repo: self
+      expectedCredentialProviderVersion: 'Microsoft.Net6.NuGet.CredentialProvider'
+- job: WindowsInstallNet8
+  pool:
+    vmImage: windows-latest
+  steps:
+  - template: validate-install-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
+- job: WindowsInstallNet8winx64
+  pool:
+    vmImage: windows-latest
+  steps:
+  - template: validate-install-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
+- job: LinuxInstallDefault
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: ''
+      expectedCredentialProviderVersion: 'Microsoft.Net6.NuGet.CredentialProvider'
+- job: LinuxInstallNet8
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
+- job: LinuxInstallNet8Fallback
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+        export ARTIFACTS_KEYRING_NON_SELF_CONTAINED=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
+- job: LinuxInstallNet8linuxx64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'  
+- job: LinuxInstallNet8linuxarm64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-arm64.NuGet.CredentialProvider'  
+- job: LinuxInstallNet8osxarm64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'      
+- job: LinuxInstallNet8osxx64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
+- job: MacOSArm64Net8Install
+  pool:
+    vmImage: macos-latest
+  steps:
+  - template: validate-install-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
+- job: WindowsArm64Net8Installs64
+  pool:
+    vmImage: windows-11-arm
+  steps:
+  - template: validate-install-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
+- job: LinuxArm64Net8Install
+  pool:
+    vmImage: ubuntu-24.04-arm
+  steps:
+  - template: validate-install-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_KEYRING_USE_NET8=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-arm64.NuGet.CredentialProvider'
+  
