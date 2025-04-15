@@ -1,0 +1,114 @@
+jobs:
+- job: WindowsInstallDefault
+  pool:
+    vmImage: windows-latest
+  steps:
+  - template: validate-setup-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: ''
+      expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
+- job: WindowsInstallNet8Fallback
+  pool:
+    vmImage: windows-latest
+  steps:
+  - template: validate-setup-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC;]true"
+      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
+- job: WindowsInstallLinux64
+  pool:
+    vmImage: windows-latest
+  steps:
+  - template: validate-setup-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]linux-x64"
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
+      validateKeyringBinary: false
+- job: LinuxInstalllNet8Fallback
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-setup-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
+- job: LinuxInstallNet8
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-setup-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: ''
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
+- job: LinuxInstallNet8linuxx64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-setup-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
+- job: LinuxInstallNet8linuxarm64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-setup-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.linux-arm64.NuGet.CredentialProvider'
+      validateKeyringBinary: false
+- job: LinuxInstallNet8osxarm64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-setup-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
+      validateKeyringBinary: false
+- job: LinuxInstallNet8osxx64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-setup-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
+      validateKeyringBinary: false
+- job: MacOSNet8Install
+  pool:
+    vmImage: macos-latest
+  steps:
+  - template: validate-setup-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: ''
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
+- job: MacOSArm64Net8Install
+  pool:
+    vmImage: macos-latest
+  steps:
+  - template: validate-setup-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]osx-arm64"
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
+      validateKeyringBinary: false
+  

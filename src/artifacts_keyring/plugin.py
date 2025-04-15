@@ -7,11 +7,10 @@ from __future__ import absolute_import
 
 import json
 import os
+import platform
 import requests
 import subprocess
 import sys
-import warnings
-import shutil
 
 from . import __version__
 from .support import Popen
@@ -22,18 +21,7 @@ class CredentialProvider(object):
 
     def __init__(self):
         if sys.platform.startswith("win"):
-            # by default, attempt to search netfx plugins folder.
-            # if that doesn't exist, search netcore for newer credprovider versions.
             tool_path = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                "plugins",
-                "plugins",
-                "netfx",
-                "CredentialProvider.Microsoft",
-                "CredentialProvider.Microsoft.exe",
-            )
-
-            tool_path = tool_path if os.path.exists(tool_path) else os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
                 "plugins",
                 "plugins",
@@ -44,29 +32,74 @@ class CredentialProvider(object):
 
             self.exe = [tool_path]
         else:
-            try:
-                # check to see if any dotnet runtimes are installed. Not checking specific versions.
-                output = subprocess.check_output(["dotnet", "--list-runtimes"]).decode().strip()
-                if(len(output) == 0):
-                    raise Exception("No dotnet runtime found. Refer to https://learn.microsoft.com/dotnet/core/install/ for installation guidelines.")
-            except Exception as e:
-                message = (
-                    "Unable to find dependency dotnet, please manually install"
-                    " the .NET runtime and ensure 'dotnet' is in your PATH. Error: "
-                )
-                raise Exception(message + str(e))
-
-            tool_path = os.path.join(
+            tool_path_root = os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
                 "plugins",
                 "plugins",
                 "netcore",
-                "CredentialProvider.Microsoft",
-                "CredentialProvider.Microsoft.dll",
+                "CredentialProvider.Microsoft"
             )
-            self.exe = ["dotnet", "exec", tool_path]
 
-        if not os.path.exists(tool_path):
+            is_dotnet_runtime_required = False
+            if os.path.exists(tool_path_root):
+                # Ensure the plugins directory executable permissions are set so Python can execute
+                # the Credential Provider plugin.
+                try:
+                    os.chmod(tool_path_root, 0o755)
+                except Exception as e:
+                    raise RuntimeError(
+                        "Failed to set executable permissions for the Credential Provider plugins directory "
+                        + tool_path_root 
+                        + ". Please ensure the directory has the correct access permissions (755). Error: "
+                        + str(e)
+                    )
+                
+                # If tool_path_root contains the runtimes directory, it means that the
+                # binary is not self-contained and requires a .NET install to run.
+                tool_path_runtimes = os.path.join(
+                    tool_path_root,
+                    "runtimes"
+                )
+                if os.path.exists(tool_path_runtimes):
+                    is_dotnet_runtime_required = True
+
+            if is_dotnet_runtime_required:
+                tool_path = os.path.join(
+                    tool_path_root,
+                    "CredentialProvider.Microsoft.dll"
+                )
+
+                try:
+                    # check to see if any dotnet runtimes are installed. Not checking specific versions.
+                    output = subprocess.check_output(["dotnet", "--list-runtimes"]).decode().strip()
+                    if(len(output) == 0):
+                        raise Exception("No dotnet runtime found. Refer to https://learn.microsoft.com/dotnet/core/install/ for installation guidelines.")
+                except Exception as e:
+                    message = (
+                        "Unable to find dependency dotnet, please manually install"
+                        " the .NET runtime and ensure 'dotnet' is in your PATH. Error: "
+                    )
+                    raise Exception(message + str(e))
+                
+                self.exe = ["dotnet", "exec", tool_path]
+            else:
+                # for self-contained binaries, the executable is not the DLL
+                if platform.system().lower() == "windows":
+                    tool_path = os.path.join(
+                        tool_path_root,
+                        "CredentialProvider.Microsoft.exe"
+                    )
+                # linux and macOS
+                else:
+                    tool_path = os.path.join(
+                        tool_path_root,
+                        "CredentialProvider.Microsoft"
+                    )
+                
+                self.exe = [tool_path]
+            
+
+        if not os.path.isfile(tool_path):
             raise RuntimeError("Unable to find credential provider in the expected path: " + tool_path)
 
     def get_credentials(self, url):

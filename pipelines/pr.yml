@@ -1,12 +1,24 @@
+
 resources:
 - repo: self
 
 pool:
   vmImage: windows-latest
 
-trigger: none
+trigger:
+- master
 
-steps:
-- template: build.yml
-  parameters:
-      publish: false
+stages:
+- stage: BuildWheels
+  displayName: 'Build Platform-Specific Wheels'
+  dependsOn: []
+  jobs:
+  - template: build-wheels.yml
+    parameters:
+      publish: false # Enable this to publish wheels to the build artifacts for validation
+
+- stage: Validate
+  displayName: 'Validate Setup Binary Selection'
+  dependsOn: [] 
+  jobs:
+  - template: validate-setup.yml

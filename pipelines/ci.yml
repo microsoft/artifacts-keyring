@@ -9,13 +9,17 @@ schedules:
 resources:
 - repo: self
 
-pool:
-  vmImage: windows-latest
+stages:
+- stage: BuildWheels
+  displayName: 'Build Platform-Specific Wheels'
+  dependsOn: []
+  jobs:
+  - template: build-wheels.yml
+    parameters:
+      publish: true
 
-trigger:
-- master
-
-steps:
-- template: build.yml
-  parameters:
-    publish: true
+- stage: Validate
+  displayName: 'Validate Setup Binary Selection'
+  dependsOn: [] 
+  jobs:
+  - template: validate-setup.yml

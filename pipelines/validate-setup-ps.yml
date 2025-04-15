@@ -1,0 +1,53 @@
+parameters:
+- name: repo
+  type: string
+- name: scriptEnvVariables
+  type: string
+- name: expectedCredentialProviderVersion
+  type: string
+- name: validateKeyringBinary
+  type: boolean
+  default: true
+
+steps:
+- checkout: ${{ parameters.repo }}
+- task: PipAuthenticate@1
+  displayName: 'Pip authenticate'
+  inputs:
+    artifactFeeds: 'PipelineTools/artifacts-credprovider'
+- script: pip install build
+  displayName: 'Install dependencies'
+- task: PowerShell@2
+  displayName: Set Environment Variables
+  inputs:
+    targetType: 'inline'
+    script: |
+      ${{ parameters.scriptEnvVariables }}
+    workingDirectory: $(Build.SourcesDirectory)
+- task: PowerShell@2
+  displayName: Validate Setup Script
+  inputs:
+    targetType: 'inline'
+    script: |
+      python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring >> ./output.log
+
+      Write-Host "Output log:"
+      Write-Host "------------------"
+      cat ./output.log
+      Write-Host "------------------"
+
+      if( (Select-String -Path ./output.log -Pattern ${{ parameters.expectedCredentialProviderVersion }}) -eq $null) {echo "Expected credential provider file not found."; exit 1}
+    workingDirectory: $(Build.SourcesDirectory)
+- task: PowerShell@2
+  displayName: Validate Keyring WHL
+  inputs:
+    targetType: 'inline'
+    script: |
+      mkdir KeyringValidation
+      Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_NONINTERACTIVE_MODE;]true"
+      $whlFile = Get-ChildItem -Path Keyring/*.whl | Select-Object -First 1
+      Write-Host "Installing Keyring from $($whlFile.FullName)"
+      pip install $($whlFile.FullName) --force-reinstall
+      Write-Host "Installed Keyring from $($whlFile.FullName)"
+    workingDirectory: $(Build.ArtifactStagingDirectory)
+  condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))

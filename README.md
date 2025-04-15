@@ -25,40 +25,57 @@ pip install artifacts-keyring
 
 ### Requirements
 
-To use `artifacts-keyring` to set up authentication between `pip`/`twine` and Azure Artifacts, the following requirements must be met:
+To use `artifacts-keyring` to set up authentication between `pip`/`twine` and Azure 
+Artifacts, the following requirements must be met:
 
 * pip version **19.2** or higher
 * twine version **1.13.0** or higher
-* python version **3.0** or higher
-* .NET runtime 8.0.X or later is installed. Refer to [here](https://learn.microsoft.com/dotnet/core/install/) for installation guideline.
+* python version **3.9** or higher
+
+  ```
+  If no matching platform specific .whl is found when running pip install and the sdist is 
+  fetched instead, the .NET runtime 8.0.X or later is required. Refer to [here](https://
+  learn.microsoft.com/dotnet/core/install/) for installation guideline.
+  ```
 
 ### Publishing packages to an Azure Artifacts feed
-Once `artifacts-keyring` is installed, to publish a package, use the following `twine` command, replacing **<org_name>** and **<feed_name>** with your own:
+Once `artifacts-keyring` is installed, to publish a package, use the following `twine` 
+command, replacing **<org_name>** and **<feed_name>** with your own:
 
 ```
 twine upload --repository-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/upload <package_wheel_or_other_dist_format>
 ```
 
 ### Installing packages from an Azure Artifacts feed
-Once `artifacts-keyring` is installed, to consume a package, use the following `pip` command, replacing **<org_name>** and **<feed_name>** with your own, and **<package_name>** with the package you want to install:
+Once `artifacts-keyring` is installed, to consume a package, use the following `pip` command, replacing 
+**<org_name>** and **<feed_name>** with your own, and **<package_name>** with the package you want to install:
 
 ```
 pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/simple
 ```
 
 ## Advanced configuration
-The `artifacts-keyring` package is layered on top of our [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider). Check out that link to the GitHub repo for more information on configuration options.
+The `artifacts-keyring` package is layered on top of our [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider). 
+Check out that link to the GitHub repo for more information on configuration options.
 
 ### Environment variables
 
-- `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
-- `ARTIFACTS_KEYRING_USE_NET8`: Controls whether or not to download the .NET 8 version of the Azure Artifacts Credential Provider.
+- `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue 
+interactive prompts.
+
+### Build Environment Variables
+
+- `ARTIFACTS_CREDENTIAL_PROVIDER_RID`: Controls whether or not to build with a specific runtime of the 
+self-contained .NET version of the Azure Artifacts Credential Provider.
+- `ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC`: Controls whether or not to build the non-self-contained 
+.NET 8 version of keyring.
 
 ## Local development
 
 1. Install build dependencies with `pip install .`
-2. Build the project using `python -m build --outdir %DIRECTORY%`
-3. Open a new terminal window in `%DIRECTORY%`, then run `pip install ***.whl --force-reinstall`
+2. For local builds, build the project using `python -m build --outdir %DIRECTORY%`
+3. You can also mimic the CI build using `cibuildwheel --platform auto --output-dir %DIRECTORY%`
+4. Open a new terminal window in `%DIRECTORY%`, then run `pip install ***.whl --force-reinstall`
 
 ## Contributing
 

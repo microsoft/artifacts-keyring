@@ -1,0 +1,52 @@
+parameters:
+- name: repo
+  type: string
+- name: scriptEnvVariables
+  type: string
+- name: expectedCredentialProviderVersion
+  type: string
+- name: validateKeyringBinary
+  type: boolean
+  default: true
+
+steps:
+- checkout: ${{ parameters.repo }}
+- task: PipAuthenticate@1
+  displayName: 'Pip authenticate'
+  inputs:
+    artifactFeeds: 'PipelineTools/artifacts-credprovider'
+- script: pip install build
+  displayName: 'Install dependencies'
+- bash: |
+    ${{ parameters.scriptEnvVariables }}
+    python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring >> ./output.log
+    
+    echo "Output log:"
+    echo "------------------"
+    cat ./output.log
+    echo "------------------"
+
+    if ! grep ${{ parameters.expectedCredentialProviderVersion }} ./output.log; then
+      echo "Expected credential provider not found"
+      exit 1
+    fi
+
+    echo "Checking for Credential Provider installation..."
+
+    if [ ! -d "./src/artifacts_keyring/plugins/plugins/netcore/CredentialProvider.Microsoft" ]; then
+      echo "Credential provider plugin directory not found"
+      exit 1
+    fi
+    
+    echo "Credential provider installed successfully"
+  workingDirectory: $(Build.SourcesDirectory)
+  displayName: Validate Install Script
+- script: |
+    mkdir KeyringValidation
+    whl_file=$(ls Keyring/*.whl | head -n 1)
+    echo "Installing Keyring from $whl_file"
+    pip install $whl_file --force-reinstall
+    echo "Installed Keyring from $whl_file"
+  workingDirectory: '$(Build.ArtifactStagingDirectory)'
+  displayName: Validate Keyring WHL
+  condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))

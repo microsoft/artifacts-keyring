@@ -1,0 +1,162 @@
+parameters:
+- name: publish
+  type: boolean
+  default: false
+
+jobs:
+- job: BuildWindows
+  displayName: 'Build Windows Wheels'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - task: PipAuthenticate@1
+    displayName: 'Pip Authenticate'
+    inputs:
+      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+  
+  - script: |
+      python -m pip install --upgrade pip
+      pip install setuptools
+      pip install wheel
+      pip install cibuildwheel
+    displayName: 'Install build tools'
+  
+  - script: |
+      cibuildwheel --output-dir wheel-win-x64
+    displayName: 'Build win-x64 wheels'
+    env:
+      CIBW_ARCHS_WINDOWS: "AMD64"
+      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "win-x64"
+  
+  - ${{ if eq(parameters.publish, true) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish win-x64 wheels'
+      inputs:
+        pathToPublish: 'wheel-win-x64'
+        artifactName: 'wheels-win-x64'
+
+- job: BuildOSX
+  displayName: 'Build macOS Wheels'
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - task: PipAuthenticate@1
+    displayName: 'Pip Authenticate'
+    inputs:
+      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+  
+  - script: |
+      python -m pip install --upgrade pip
+      pip install setuptools
+      pip install wheel
+      pip install cibuildwheel
+    displayName: 'Install build tools'
+  
+  - script: |
+      cibuildwheel --output-dir wheel-osx-x64
+    displayName: 'Build osx-x64 wheels'
+    env:
+      CIBW_ARCHS_MACOS: "x86_64"
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-x64"
+
+  - script: |
+      cibuildwheel --output-dir wheel-osx-arm64
+    displayName: 'Build osx-arm64 wheels'
+    env:
+      CIBW_ARCHS_MACOS: "arm64"
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-arm64"
+  
+  - ${{ if eq(parameters.publish, true) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish osx-x64 wheels'
+      inputs:
+        pathToPublish: 'wheel-osx-x64'
+        artifactName: 'wheels-osx-x64'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish osx-arm64 wheels'
+      inputs:
+        pathToPublish: 'wheel-osx-arm64'
+        artifactName: 'wheels-osx-arm64'
+
+- job: BuildLinux64
+  displayName: 'Build Linux x64 Wheels'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - task: PipAuthenticate@1
+    displayName: 'Pip Authenticate'
+    inputs:
+      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+  
+  - script: |
+      python -m pip install --upgrade pip
+      pip install setuptools
+      pip install wheel
+      pip install cibuildwheel
+    displayName: 'Install build tools'
+  
+  - script: |
+      cibuildwheel --output-dir wheel-linux-x64
+    displayName: 'Build linux-x64 wheels'
+    env:
+      CIBW_ARCHS_LINUX: "x86_64"
+      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-x64"
+  
+  - ${{ if eq(parameters.publish, true) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish linux-x64 wheels'
+      inputs:
+        pathToPublish: 'wheel-linux-x64'
+        artifactName: 'wheels-linux-x64'
+
+- job: BuildSDist
+  displayName: 'Build Source Distribution'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - task: PipAuthenticate@1
+    displayName: 'Pip Authenticate'
+    inputs:
+      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+  
+  - script: |
+      python -m pip install --upgrade pip build
+      pip install setuptools
+      pip install wheel
+      pip install cibuildwheel
+    displayName: 'Install build tools'
+  
+  - script: |
+      python -m build --sdist
+    displayName: 'Build source distribution'
+    env:
+      ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC: "true"
+  
+  - ${{ if eq(parameters.publish, true) }}:
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: 'dist'
+        artifactName: 'sdist'
