@@ -21,4 +21,4 @@ stages:
 - stage: Validate
   dependsOn: []
   jobs:
-  - template: build/validate-setup.yml
+  - template: validate-setup.yml
