@@ -1,6 +1,8 @@
 parameters:
 - name: repo
   type: string
+- name: scriptEnvVariables
+  type: string
 - name: expectedCredentialProviderVersion
   type: string
 
@@ -17,6 +19,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
+      ${{ parameters.scriptEnvVariables }}
       python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring 6>> ./output.log
       cat ./output.log
       if( (Select-String -Path .\output.log -Pattern ${{ parameters.expectedCredentialProviderVersion }}) -eq $null) {echo "Expected credential provider file not found."; exit 1}
