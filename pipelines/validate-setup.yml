@@ -3,7 +3,7 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-  - template: validate-install-ps.yml@self
+  - template: validate-setup-ps.yml@self
     parameters:
       repo: self
       expectedCredentialProviderVersion: 'Microsoft.Net6.NuGet.CredentialProvider'
@@ -11,7 +11,7 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-  - template: validate-install-ps.yml@self
+  - template: validate-setup-ps.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -21,7 +21,7 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-  - template: validate-install-ps.yml@self
+  - template: validate-setup-ps.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -32,7 +32,7 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - template: validate-install-bash.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
       scriptEnvVariables: ''
@@ -41,7 +41,7 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - template: validate-install-bash.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -51,7 +51,7 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - template: validate-install-bash.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -62,7 +62,7 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - template: validate-install-bash.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -73,7 +73,7 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - template: validate-install-bash.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -84,7 +84,7 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - template: validate-install-bash.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -95,7 +95,7 @@ jobs:
   pool:
     vmImage: ubuntu-latest
   steps:
-  - template: validate-install-bash.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
@@ -106,7 +106,7 @@ jobs:
   pool:
     vmImage: macos-latest
   steps:
-  - template: validate-install-ps.yml@self
+  - template: validate-setup-ps.yml@self
     parameters:
       repo: self
       scriptEnvVariables: |
