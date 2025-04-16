@@ -16,7 +16,7 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
+        $env:ARTIFACTS_KEYRING_USE_NET8='true'
       expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
 - job: WindowsInstallNet8winx64
   pool:
@@ -26,8 +26,8 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
-        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x64
+        $env:ARTIFACTS_KEYRING_USE_NET8='true'
+        $env:ARTIFACTS_CREDENTIAL_PROVIDER_RID='win-x64'
       expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
 - job: LinuxInstallDefault
   pool:
@@ -111,6 +111,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
+        $env:ARTIFACTS_KEYRING_USE_NET8='true'
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
   
