@@ -17,7 +17,11 @@ steps:
 - bash: |
     ${{ parameters.scriptEnvVariables }}
     python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring >> ./output.log
+    
+    echo "Output log:"
+    echo "------------------"
     cat ./output.log
+    echo "------------------"
 
     if ! grep ${{ parameters.expectedCredentialProviderVersion }} ./output.log; then
       echo "Expected credential provider not found"
@@ -25,7 +29,6 @@ steps:
     fi
 
     echo "Checking for Credential Provider installation..."
-    ls
 
     if [ ! -d "./src/artifacts_keyring/plugins/plugins/netcore/CredentialProvider.Microsoft" ]; then
       echo "Credential provider plugin directory not found"

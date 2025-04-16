@@ -114,6 +114,16 @@ jobs:
         export ARTIFACTS_KEYRING_USE_NET8=true
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
+- job: MacOSNet8Install
+  pool:
+    vmImage: macos-latest
+  steps:
+  - template: validate-setup-ps.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_USE_NET8;]true"
+      expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
 - job: MacOSArm64Net8Install
   pool:
     vmImage: macos-latest
@@ -123,5 +133,6 @@ jobs:
       repo: self
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_USE_NET8;]true"
+        Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]osx-arm64"
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
   

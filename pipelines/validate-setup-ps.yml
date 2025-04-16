@@ -27,6 +27,11 @@ steps:
     targetType: 'inline'
     script: |
       python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring 6>> ./output.log
+
+      Write-Host "Output log:"
+      Write-Host "------------------"
       cat ./output.log
-      if( (Select-String -Path .\output.log -Pattern ${{ parameters.expectedCredentialProviderVersion }}) -eq $null) {echo "Expected credential provider file not found."; exit 1}
+      Write-Host "------------------"
+
+      if( (Select-String -Path ./output.log -Pattern ${{ parameters.expectedCredentialProviderVersion }}) -eq $null) {echo "Expected credential provider file not found."; exit 1}
     workingDirectory: $(Build.SourcesDirectory)
