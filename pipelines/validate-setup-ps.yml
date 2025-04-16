@@ -26,7 +26,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring 6>> ./output.log
+      python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring >> ./output.log
 
       Write-Host "Output log:"
       Write-Host "------------------"
