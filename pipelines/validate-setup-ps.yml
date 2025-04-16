@@ -15,11 +15,17 @@ steps:
 - script: pip install build
   displayName: 'Install dependencies'
 - task: PowerShell@2
-  displayName: Validate Setup Script
+  displayName: Set Environment Variables
   inputs:
     targetType: 'inline'
     script: |
       ${{ parameters.scriptEnvVariables }}
+    workingDirectory: $(Build.SourcesDirectory)
+- task: PowerShell@2
+  displayName: Validate Setup Script
+  inputs:
+    targetType: 'inline'
+    script: |
       python -m build --outdir $(Build.ArtifactStagingDirectory)/Keyring 6>> ./output.log
       cat ./output.log
       if( (Select-String -Path .\output.log -Pattern ${{ parameters.expectedCredentialProviderVersion }}) -eq $null) {echo "Expected credential provider file not found."; exit 1}
