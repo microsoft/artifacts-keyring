@@ -7,7 +7,7 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: ''
-      expectedCredentialProviderVersion: 'Microsoft.Net6.NuGet.CredentialProvider'
+      expectedCredentialProviderVersion: 'Microsoft.NuGet.CredentialProvider'
 - job: WindowsInstallNet8
   pool:
     vmImage: windows-latest
@@ -16,7 +16,7 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        set "ARTIFACTS_KEYRING_USE_NET8=true"
+        $env:ARTIFACTS_KEYRING_USE_NET8="true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
 - job: WindowsInstallNet8Fallback
   pool:
@@ -26,8 +26,8 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        set "ARTIFACTS_KEYRING_USE_NET8=true"
-        set "ARTIFACTS_KEYRING_NON_SELF_CONTAINED=true"
+        $env:ARTIFACTS_KEYRING_USE_NET8="true"
+        $env:ARTIFACTS_KEYRING_NON_SELF_CONTAINED="true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
 - job: WindowsInstallLinux64
   pool:
@@ -37,8 +37,8 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        set "ARTIFACTS_KEYRING_USE_NET8=true"
-        set "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
+        $env:ARTIFACTS_KEYRING_USE_NET8="true"
+        $env:ARTIFACTS_CREDENTIAL_PROVIDER_RID="linux-x64"
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
 - job: LinuxInstallDefault
   pool:
@@ -48,7 +48,7 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: ''
-      expectedCredentialProviderVersion: 'Microsoft.Net6.NuGet.CredentialProvider'
+      expectedCredentialProviderVersion: 'Microsoft.NuGet.CredentialProvider'
 - job: LinuxInstallNet8
   pool:
     vmImage: ubuntu-latest
@@ -122,6 +122,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        set "ARTIFACTS_KEYRING_USE_NET8=true"
+        $env:ARTIFACTS_KEYRING_USE_NET8="true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
   
