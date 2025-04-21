@@ -15,7 +15,7 @@ import urllib.request
 CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.0/"
 CREDENTIAL_PROVIDER_NETFX = CREDENTIAL_PROVIDER_BASE + "Microsoft.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
-CREDENTIAL_PROVIDER_NET_VER_VAR_NAME = "ARTIFACTS_KEYRING_USE_NET8"
+CREDENTIAL_PROVIDER_NET8_VAR_NAME = "ARTIFACTS_KEYRING_USE_NET8"
 CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_KEYRING_NON_SELF_CONTAINED"
 CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_RID"
 
@@ -42,13 +42,6 @@ def get_version(root):
     return m.group(1) if m else "0.1.0"
 
 def get_runtime_identifier():
-    # Check if the environment variable is set for self-contained version
-    # This can used for to override the auto-selected runtime identifier
-    # for cases such as Docker builds.
-    if CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME in os.environ and \
-        os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]:
-            return str(os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]).lower()
-    
     os_system = platform.system().lower()
     os_arch = platform.machine().lower()
     
@@ -76,9 +69,16 @@ def get_runtime_identifier():
     return runtime_id
 
 def get_download_url():
-    use_net_8 = CREDENTIAL_PROVIDER_NET_VER_VAR_NAME in os.environ and \
-        os.environ[CREDENTIAL_PROVIDER_NET_VER_VAR_NAME] and \
-        str(os.environ[CREDENTIAL_PROVIDER_NET_VER_VAR_NAME]).lower() == "true"
+    # Check if the environment variable is set for self-contained version
+    # This can used for to override the auto-selected runtime identifier
+    # for cases such as Docker builds.
+    if CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME in os.environ and \
+        os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]:
+            return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{str(os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]).lower()}")
+    
+    use_net_8 = CREDENTIAL_PROVIDER_NET8_VAR_NAME in os.environ and \
+        os.environ[CREDENTIAL_PROVIDER_NET8_VAR_NAME] and \
+        str(os.environ[CREDENTIAL_PROVIDER_NET8_VAR_NAME]).lower() == "true"
 
     use_non_sc = CREDENTIAL_PROVIDER_NON_SC_VAR_NAME in os.environ and \
         os.environ[CREDENTIAL_PROVIDER_NON_SC_VAR_NAME] and \
@@ -89,6 +89,7 @@ def get_download_url():
     elif use_net_8:
         return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{get_runtime_identifier()}")
     else:
+        print(f"Selected .NET Framework 3.1 since {CREDENTIAL_PROVIDER_NET8_VAR_NAME} is not true and {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} is not specified. Support for .NET 3.1 will be removed in the next major release version.")
         return CREDENTIAL_PROVIDER_NETFX
 
 if __name__ == "__main__":
