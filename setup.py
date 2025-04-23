@@ -12,7 +12,7 @@ import setuptools
 import tarfile
 import urllib.request
 
-CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.0/"
+CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.1/"
 CREDENTIAL_PROVIDER_NETFX = CREDENTIAL_PROVIDER_BASE + "Microsoft.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8_VAR_NAME = "ARTIFACTS_KEYRING_USE_NET8"
@@ -30,7 +30,8 @@ def download_credential_provider(root):
     print("Downloading artifacts-credprovider from", download_url)
     with urllib.request.urlopen(download_url) as fileobj:
         tar = tarfile.open(mode="r|gz", fileobj=fileobj)
-        tar.extractall(dest)
+        # https://docs.python.org/3.12/library/tarfile.html#tarfile.tar_filter
+        tar.extractall(dest, filter='tar')
 
 def get_version(root):
     src = os.path.join(root, "src", "artifacts_keyring", "__init__.py")
@@ -52,7 +53,7 @@ def get_runtime_identifier():
     elif os_system == "windows":
         runtime_id = "win"
     else:
-        print(f"Unsupported OS: {os_system}. Please set the {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} environment variable to specify a runtime identifier.")
+        print(f"Warning: Unsupported OS: {os_system}. Please set the {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} environment variable to specify a runtime identifier.")
         return ""
 
     if os_arch.startswith('aarch64') or os_arch.startswith('arm64'):
@@ -63,7 +64,7 @@ def get_runtime_identifier():
     if os_arch.startswith('x86_64') or os_arch.startswith('amd64'):
         runtime_id += "-x64"
     else:
-        print(f"Unsupported architecture: {os_arch}. Please set the {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} environment variable to specify a runtime identifier.")
+        print(f"Warning: Unsupported architecture: {os_arch}. Please set the {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} environment variable to specify a runtime identifier.")
         return ""
 
     return runtime_id
@@ -89,7 +90,7 @@ def get_download_url():
     elif use_net_8:
         return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{get_runtime_identifier()}")
     else:
-        print(f"Selected .NET Framework 3.1 since {CREDENTIAL_PROVIDER_NET8_VAR_NAME} is not true and {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} is not specified. Support for .NET 3.1 will be removed in the next major release version.")
+        print(f"Warning: Selected .NET Framework 4.6.1 since {CREDENTIAL_PROVIDER_NET8_VAR_NAME} is not true and {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} is not specified. Support for .NET Framework 4.6.1 will be removed in the next major release version.")
         return CREDENTIAL_PROVIDER_NETFX
 
 if __name__ == "__main__":
