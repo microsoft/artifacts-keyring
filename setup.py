@@ -5,9 +5,12 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
 
+import io
 import os
 import platform
 import re
+import sys
+import zipfile
 import setuptools
 import tarfile
 import urllib.request
@@ -15,6 +18,7 @@ import urllib.request
 CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.1/"
 CREDENTIAL_PROVIDER_NETFX = CREDENTIAL_PROVIDER_BASE + "Microsoft.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
+CREDENTIAL_PROVIDER_NET8_ZIP = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.zip"
 CREDENTIAL_PROVIDER_NET8_VAR_NAME = "ARTIFACTS_KEYRING_USE_NET8"
 CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_KEYRING_NON_SELF_CONTAINED"
 CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_RID"
@@ -28,10 +32,21 @@ def download_credential_provider(root):
     print("Downloading and extracting to", dest)
     download_url = get_download_url()
     print("Downloading artifacts-credprovider from", download_url)
-    with urllib.request.urlopen(download_url) as fileobj:
-        tar = tarfile.open(mode="r|gz", fileobj=fileobj)
-        # https://docs.python.org/3.12/library/tarfile.html#tarfile.tar_filter
-        tar.extractall(dest, filter='tar')
+
+    with urllib.request.urlopen(download_url) as download_file:
+        if download_url.endswith(".zip"):
+            with zipfile.ZipFile(io.BytesIO(download_file.read())) as zip_file:
+                zip_file.extractall(dest)
+        else:
+            tar = tarfile.open(mode="r|gz", fileobj=download_file)
+
+            # Python 3.12 adds a safety filter for tar extraction
+            # to prevent placement of files outside the target directory.
+            # https://docs.python.org/3.12/library/tarfile.html#tarfile.tar_filter
+            if sys.version_info >= (3, 12):
+                tar.extractall(dest, filter='data')
+            else:
+                tar.extractall(dest)
 
 def get_version(root):
     src = os.path.join(root, "src", "artifacts_keyring", "__init__.py")
@@ -87,6 +102,9 @@ def get_download_url():
 
     if use_net_8 and use_non_sc:
         return CREDENTIAL_PROVIDER_NET8
+    elif use_net_8 and platform.system().lower() == "darwin":
+        # macOS does not publish .tar.gz files, use the .zip version instead
+        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{get_runtime_identifier()}")
     elif use_net_8:
         return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{get_runtime_identifier()}")
     else:
