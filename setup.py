@@ -102,11 +102,13 @@ def get_download_url():
 
     if use_net_8 and use_non_sc:
         return CREDENTIAL_PROVIDER_NET8
-    elif use_net_8 and platform.system().lower() == "darwin":
-        # macOS does not publish .tar.gz files, use the .zip version instead
-        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{get_runtime_identifier()}")
     elif use_net_8:
-        return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{get_runtime_identifier()}")
+        runtime_id = get_runtime_identifier()
+        if runtime_id.startswith("osx"):
+            # macOS does not publish .tar.gz files, use the .zip version instead
+            return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_id}")
+
+        return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_id}")
     else:
         print(f"Warning: Selected .NET Framework 4.6.1 since {CREDENTIAL_PROVIDER_NET8_VAR_NAME} is not true and {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} is not specified. Support for .NET Framework 4.6.1 will be removed in the next major release version.")
         return CREDENTIAL_PROVIDER_NETFX
