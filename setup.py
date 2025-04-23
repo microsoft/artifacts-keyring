@@ -90,7 +90,11 @@ def get_download_url():
     # for cases such as Docker builds.
     if CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME in os.environ and \
         os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]:
-            return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{str(os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]).lower()}")
+            runtime_var = str(os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]).lower()
+            if runtime_var.startswith("osx"):
+                return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_var}")
+
+            return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
     
     use_net_8 = CREDENTIAL_PROVIDER_NET8_VAR_NAME in os.environ and \
         os.environ[CREDENTIAL_PROVIDER_NET8_VAR_NAME] and \
@@ -103,7 +107,7 @@ def get_download_url():
     if use_net_8 and use_non_sc:
         return CREDENTIAL_PROVIDER_NET8
     elif use_net_8:
-        runtime_id = get_runtime_identifier()
+        runtime_id = str(get_runtime_identifier())
         if runtime_id.startswith("osx"):
             # macOS does not publish .tar.gz files, use the .zip version instead
             return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_id}")
