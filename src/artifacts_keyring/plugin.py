@@ -113,7 +113,7 @@ class CredentialProvider(object):
                 "-Uri", url,
                 "-IsRetry", str(is_retry),
                 "-NonInteractive", str(non_interactive),
-                "-CanShowDialog", "False",
+                "-CanShowDialog", "True",
                 "-OutputFormat", "Json"
             ],
             stdin=subprocess.PIPE,
