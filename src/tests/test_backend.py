@@ -82,13 +82,13 @@ def validating_provider(monkeypatch):
     def mock_get_credentials(self, url, is_retry):
         return url, is_retry
 
-    def mock_requests_get(url, auth):
+    def mock_requests_get(self, url, **kwargs):
         response = MockGetResponse()
         response.status_code = int(url[:3])
         return response
 
     monkeypatch.setattr(CredentialProvider, "_get_credentials_from_credential_provider", mock_get_credentials)
-    monkeypatch.setattr(requests, "get", mock_requests_get)
+    monkeypatch.setattr(requests.Session, "get", mock_requests_get)
 
     yield CredentialProvider()
 
