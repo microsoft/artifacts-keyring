@@ -16,11 +16,10 @@ import tarfile
 import urllib.request
 
 CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.1/"
-CREDENTIAL_PROVIDER_NETFX = CREDENTIAL_PROVIDER_BASE + "Microsoft.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8_ZIP = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.zip"
 CREDENTIAL_PROVIDER_NET8_VAR_NAME = "ARTIFACTS_KEYRING_USE_NET8"
-CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_KEYRING_NON_SELF_CONTAINED"
+CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC"
 CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_RID"
 
 def download_credential_provider(root):
@@ -29,7 +28,7 @@ def download_credential_provider(root):
     if not os.path.isdir(dest):
         os.makedirs(dest)
 
-    print("Downloading and extracting to", dest)
+    print("Downloading and extracting artifacts-credprovider to", dest)
     download_url = get_download_url()
     print("Downloading artifacts-credprovider from", download_url)
 
@@ -96,26 +95,19 @@ def get_download_url():
 
             return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
     
-    use_net_8 = CREDENTIAL_PROVIDER_NET8_VAR_NAME in os.environ and \
-        os.environ[CREDENTIAL_PROVIDER_NET8_VAR_NAME] and \
-        str(os.environ[CREDENTIAL_PROVIDER_NET8_VAR_NAME]).lower() == "true"
-
     use_non_sc = CREDENTIAL_PROVIDER_NON_SC_VAR_NAME in os.environ and \
         os.environ[CREDENTIAL_PROVIDER_NON_SC_VAR_NAME] and \
         str(os.environ[CREDENTIAL_PROVIDER_NON_SC_VAR_NAME]).lower() == "true"
 
-    if use_net_8 and use_non_sc:
+    if use_non_sc:
         return CREDENTIAL_PROVIDER_NET8
-    elif use_net_8:
+    else:
         runtime_id = str(get_runtime_identifier())
         if runtime_id.startswith("osx"):
             # macOS does not publish .tar.gz files, use the .zip version instead
             return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_id}")
 
         return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_id}")
-    else:
-        print(f"Warning: Selected .NET Framework 4.6.1 since {CREDENTIAL_PROVIDER_NET8_VAR_NAME} is not true and {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} is not specified. Support for .NET Framework 4.6.1 will be removed in the next major release version.")
-        return CREDENTIAL_PROVIDER_NETFX
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.abspath(__file__))

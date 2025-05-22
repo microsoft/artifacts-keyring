@@ -54,13 +54,16 @@ The `artifacts-keyring` package is layered on top of our [Azure Artifacts Creden
 - `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue interactive prompts.
 - `ARTIFACTS_KEYRING_USE_NET8`: Controls whether or not to download the .NET 8 version of the Azure Artifacts Credential Provider.
 - `ARTIFACTS_CREDENTIAL_PROVIDER_RID`: Controls whether or not to download a specific runtime of the self-contained .NET 8 version of the Azure Artifacts Credential Provider.
-- `ARTIFACTS_KEYRING_NON_SELF_CONTAINED`: Controls whether or not to download the non-self-contained .NET 8 version of the Azure Artifacts Credential Provider.
+- `ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC`: Controls whether or not to download the non-self-contained .NET 8 version of the Azure Artifacts Credential Provider.
 
 ## Local development
 
 1. Install build dependencies with `pip install .`
 2. Build the project using `python -m build --outdir %DIRECTORY%`
 3. Open a new terminal window in `%DIRECTORY%`, then run `pip install ***.whl --force-reinstall`
+
+If you have developed on artifacts-keyring prior to the v1.0 release, you may need to remove your `src\artifacts-keyring\plugins` folder
+to clear legacy .NET Framework binaries which would be copied to your Python build outputs.
 
 ## Contributing
 
