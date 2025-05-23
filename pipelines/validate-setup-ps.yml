@@ -45,7 +45,7 @@ steps:
     script: |
       mkdir KeyringValidation
       Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_NONINTERACTIVE_MODE;]true"
-  workingDirectory: $(Build.ArtifactStagingDirectory)
+    workingDirectory: $(Build.ArtifactStagingDirectory)
   condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))
 - script: |
     pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
