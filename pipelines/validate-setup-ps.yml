@@ -48,6 +48,10 @@ steps:
     workingDirectory: $(Build.ArtifactStagingDirectory)
   condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))
 - script: |
+    whl_file=$(ls *.whl | head -n 1)
+    echo "Installing Keyring from $whl_file"
+    pip install --no-index --force-reinstall whl_file
+    echo "Installed Keyring from $whl_file"
     pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
     pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
   workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
