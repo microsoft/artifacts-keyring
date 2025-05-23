@@ -44,7 +44,7 @@ steps:
       Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_NONINTERACTIVE_MODE;]true"
     workingDirectory: $(Build.ArtifactStagingDirectory)
 - script: |
-    pip install --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
+    pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
     pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
   workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
   displayName: Validate Keyring Build
