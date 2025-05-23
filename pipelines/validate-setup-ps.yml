@@ -51,11 +51,3 @@ steps:
       Write-Host "Installed Keyring from $($whlFile.FullName)"
     workingDirectory: $(Build.ArtifactStagingDirectory)
   condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))
-- task: PowerShell@2
-  displayName: Validate Keyring
-  inputs:
-    targetType: 'inline'
-    script: |
-      pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
-    workingDirectory: $(Build.ArtifactStagingDirectory)/KeyringValidation
-  condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))
