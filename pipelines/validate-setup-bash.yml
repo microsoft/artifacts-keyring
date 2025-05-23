@@ -41,15 +41,15 @@ steps:
     echo "Credential provider installed successfully"
   workingDirectory: $(Build.SourcesDirectory)
   displayName: Validate Install Script
-- ${{ if eq(parameters.validateKeyringBinary, 'true') }}:
-  - script: |
-      mkdir KeyringValidation
-    workingDirectory: '$(Build.ArtifactStagingDirectory)'
-    displayName: Prep Keyring Validation
-- ${{ if eq(parameters.validateKeyringBinary, 'true') }}:
-  - script: |
-      export ARTIFACTS_KEYRING_NONINTERACTIVE_MODE=true
-      pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
-      pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
-    workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
-    displayName: Validate Keyring Build
+- script: |
+    mkdir KeyringValidation
+  workingDirectory: '$(Build.ArtifactStagingDirectory)'
+  displayName: Prep Keyring Validation
+  condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))
+- script: |
+    export ARTIFACTS_KEYRING_NONINTERACTIVE_MODE=true
+    pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
+    pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
+  workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
+  displayName: Validate Keyring Build
+  condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))

@@ -38,18 +38,18 @@ steps:
 
       if( (Select-String -Path ./output.log -Pattern ${{ parameters.expectedCredentialProviderVersion }}) -eq $null) {echo "Expected credential provider file not found."; exit 1}
     workingDirectory: $(Build.SourcesDirectory)
-- ${{ if eq(parameters.validateKeyringBinary, 'true') }}:
-  - task: PowerShell@2
-    displayName: Prep Keyring Validation
-    inputs:
-      targetType: 'inline'
-      script: |
-        mkdir KeyringValidation
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_NONINTERACTIVE_MODE;]true"
-    workingDirectory: $(Build.ArtifactStagingDirectory)
-- ${{ if eq(parameters.validateKeyringBinary, 'true') }}:
-  - script: |
-      pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
-      pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
-    workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
-    displayName: Validate Keyring Build
+- task: PowerShell@2
+  displayName: Prep Keyring Validation
+  inputs:
+    targetType: 'inline'
+    script: |
+      mkdir KeyringValidation
+      Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_NONINTERACTIVE_MODE;]true"
+  workingDirectory: $(Build.ArtifactStagingDirectory)
+  condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))
+- script: |
+    pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
+    pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
+  workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
+  condition: and(succeeded(), eq('${{ parameters.validateKeyringBinary }}', true))
+  displayName: Validate Keyring Build
