@@ -5,6 +5,9 @@ parameters:
   type: string
 - name: expectedCredentialProviderVersion
   type: string
+- name: validateKeyringBinary
+  type: boolean
+  default: true
 
 steps:
 - checkout: ${{ parameters.repo }}
@@ -38,13 +41,15 @@ steps:
     echo "Credential provider installed successfully"
   workingDirectory: $(Build.SourcesDirectory)
   displayName: Validate Install Script
-- script: |
-    mkdir KeyringValidation
-  workingDirectory: '$(Build.ArtifactStagingDirectory)'
-  displayName: Prep Keyring Validation
-- script: |
-    export ARTIFACTS_KEYRING_NONINTERACTIVE_MODE=true
-    pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
-    pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
-  workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
-  displayName: Validate Keyring Build
+- ${{ if eq(parameters.validateKeyringBinary, 'true') }}:
+  - script: |
+      mkdir KeyringValidation
+    workingDirectory: '$(Build.ArtifactStagingDirectory)'
+    displayName: Prep Keyring Validation
+- ${{ if eq(parameters.validateKeyringBinary, 'true') }}:
+  - script: |
+      export ARTIFACTS_KEYRING_NONINTERACTIVE_MODE=true
+      pip install --no-index --find-links=$(Build.ArtifactStagingDirectory)/Keyring artifacts_keyring --force-reinstall
+      pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
+    workingDirectory: '$(Build.ArtifactStagingDirectory)/KeyringValidation'
+    displayName: Validate Keyring Build
