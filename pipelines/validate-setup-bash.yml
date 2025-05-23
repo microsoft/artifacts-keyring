@@ -38,3 +38,8 @@ steps:
     echo "Credential provider installed successfully"
   workingDirectory: $(Build.SourcesDirectory)
   displayName: Validate Install Script
+- script: |
+    pip install --find-links=$(Build.ArtifactStagingDirectory)\Keyring artifacts_keyring --force-reinstall
+    pip install setuptools --force-reinstall --index-url https://pkgs.dev.azure.com/mseng/_packaging/Python/pypi/simple/
+  workingDirectory: '$(Build.ArtifactStagingDirectory)\KeyringValidation'
+  displayName: Validate Keyring Build
