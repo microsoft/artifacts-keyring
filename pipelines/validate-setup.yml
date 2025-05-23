@@ -7,16 +7,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: ''
-      expectedCredentialProviderVersion: 'Microsoft.NuGet.CredentialProvider'
-- job: WindowsInstallNet8
-  pool:
-    vmImage: windows-latest
-  steps:
-  - template: validate-setup-ps.yml@self
-    parameters:
-      repo: self
-      scriptEnvVariables: |
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_USE_NET8;]true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
 - job: WindowsInstallNet8Fallback
   pool:
@@ -26,8 +16,7 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_USE_NET8;]true"
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_NON_SELF_CONTAINED;]true"
+        Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC;]true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
 - job: WindowsInstallLinux64
   pool:
@@ -37,7 +26,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_USE_NET8;]true"
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]linux-x64"
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
 - job: WindowsInstallLinux64NoNet8Var
@@ -50,15 +38,16 @@ jobs:
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]linux-x64"
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
-- job: LinuxInstallDefault
+- job: LinuxInstalllNet8Fallback
   pool:
     vmImage: ubuntu-latest
   steps:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      scriptEnvVariables: ''
-      expectedCredentialProviderVersion: 'Microsoft.NuGet.CredentialProvider'
+      scriptEnvVariables: |
+        export ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
 - job: LinuxInstallNet8
   pool:
     vmImage: ubuntu-latest
@@ -66,20 +55,8 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
+      scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
-- job: LinuxInstallNet8Fallback
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - template: validate-setup-bash.yml@self
-    parameters:
-      repo: self
-      scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
-        export ARTIFACTS_KEYRING_NON_SELF_CONTAINED=true
-      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
 - job: LinuxInstallNet8linuxx64
   pool:
     vmImage: ubuntu-latest
@@ -88,7 +65,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
 - job: LinuxInstallNet8linuxarm64
@@ -99,7 +75,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-arm64.NuGet.CredentialProvider'
 - job: LinuxInstallNet8osxarm64
@@ -110,7 +85,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
 - job: LinuxInstallosxarm64NoNet8Var
@@ -131,7 +105,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        export ARTIFACTS_KEYRING_USE_NET8=true
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
 - job: MacOSNet8Install
@@ -141,8 +114,7 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      scriptEnvVariables: |
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_USE_NET8;]true"
+      scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
 - job: MacOSArm64Net8Install
   pool:
@@ -152,7 +124,6 @@ jobs:
     parameters:
       repo: self
       scriptEnvVariables: |
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_KEYRING_USE_NET8;]true"
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]osx-arm64"
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
   
