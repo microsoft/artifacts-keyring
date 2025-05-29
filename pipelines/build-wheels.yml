@@ -62,6 +62,7 @@ jobs:
     displayName: 'Build osx-x64 wheels'
     env:
       CIBW_ARCHS_MACOS: "x86_64"
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-x64"
 
   - script: |
@@ -69,6 +70,7 @@ jobs:
     displayName: 'Build osx-arm64 wheels'
     env:
       CIBW_ARCHS_MACOS: "arm64"
+      MACOSX_DEPLOYMENT_TARGET: "10.15"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-arm64"
   
   - ${{ if eq(parameters.publish, true) }}:
@@ -107,6 +109,7 @@ jobs:
     displayName: 'Build linux-x64 wheels'
     env:
       CIBW_ARCHS_LINUX: "x86_64"
+      CIBW_REPAIR_WHEEL_COMMAND_LINUX: "auditwheel repair --plat manylinux2014_x86_64 -w {dest_dir} {wheel}"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-x64"
   
   - script: |
@@ -114,6 +117,7 @@ jobs:
     displayName: 'Build linux-arm64 wheels'
     env:
       CIBW_ARCHS_LINUX: "aarch64"
+      CIBW_REPAIR_WHEEL_COMMAND_LINUX: "auditwheel repair --plat manylinux2014_aarch64 -w {dest_dir} {wheel}"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-arm64"
   
   - ${{ if eq(parameters.publish, true) }}:
