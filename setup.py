@@ -11,40 +11,18 @@ import platform
 import re
 import sys
 import zipfile
-import setuptools
 import tarfile
 import urllib.request
+import shutil
+from setuptools import setup
+from setuptools.command.build_py import build_py
+from wheel.bdist_wheel import bdist_wheel
 
 CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.1/"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8_ZIP = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.zip"
 CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC"
 CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_RID"
-
-def download_credential_provider(root):
-    dest = os.path.join(root, "src", "artifacts_keyring", "plugins")
-
-    if not os.path.isdir(dest):
-        os.makedirs(dest)
-
-    print("Downloading and extracting artifacts-credprovider to", dest)
-    download_url = get_download_url()
-    print("Downloading artifacts-credprovider from", download_url)
-
-    with urllib.request.urlopen(download_url) as download_file:
-        if download_url.endswith(".zip"):
-            with zipfile.ZipFile(io.BytesIO(download_file.read())) as zip_file:
-                zip_file.extractall(dest)
-        else:
-            tar = tarfile.open(mode="r|gz", fileobj=download_file)
-
-            # Python 3.12 adds a safety filter for tar extraction
-            # to prevent placement of files outside the target directory.
-            # https://docs.python.org/3.12/library/tarfile.html#tarfile.tar_filter
-            if sys.version_info >= (3, 12):
-                tar.extractall(dest, filter='data')
-            else:
-                tar.extractall(dest)
 
 def get_version(root):
     src = os.path.join(root, "src", "artifacts_keyring", "__init__.py")
@@ -82,18 +60,22 @@ def get_runtime_identifier():
 
     return runtime_id
 
+def get_os_runtime_url(runtime_var):
+    if runtime_var.startswith("osx"):
+        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_var}")
+
+    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
+
 def get_download_url():
-    # Check if the environment variable is set for self-contained version
-    # This can used for to override the auto-selected runtime identifier
-    # for cases such as Docker builds.
+    # When building the platform wheels in CI, use the self-contained version of the credential provider.
+    # In these cases, check ARTIFACTS_CREDENTIAL_PROVIDER_RID to determine the desired runtime identifier.
     if CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME in os.environ and \
         os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]:
             runtime_var = str(os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]).lower()
-            if runtime_var.startswith("osx"):
-                return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_var}")
-
-            return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
+            return get_os_runtime_url(runtime_var)
     
+    # Specify whether they want self-contained auto-detection or not.
+    # Only applicable for non-CI environments.
     use_non_sc = CREDENTIAL_PROVIDER_NON_SC_VAR_NAME in os.environ and \
         os.environ[CREDENTIAL_PROVIDER_NON_SC_VAR_NAME] and \
         str(os.environ[CREDENTIAL_PROVIDER_NON_SC_VAR_NAME]).lower() == "true"
@@ -102,13 +84,56 @@ def get_download_url():
         return CREDENTIAL_PROVIDER_NET8
     else:
         runtime_id = str(get_runtime_identifier())
-        if runtime_id.startswith("osx"):
-            # macOS does not publish .tar.gz files, use the .zip version instead
-            return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_id}")
+        return get_os_runtime_url(runtime_id)
 
-        return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_id}")
+
+def download_credential_provider(dest):
+    if not os.path.isdir(dest):
+        os.makedirs(dest)
+
+    print("Downloading and extracting artifacts-credprovider to", dest)
+    download_url = get_download_url()
+    print("Downloading artifacts-credprovider from", download_url)
+
+    with urllib.request.urlopen(download_url) as download_file:
+        if download_url.endswith(".zip"):
+            with zipfile.ZipFile(io.BytesIO(download_file.read())) as zip_file:
+                zip_file.extractall(dest)
+        else:
+            tar = tarfile.open(mode="r|gz", fileobj=download_file)
+
+            # Python 3.12 adds a safety filter for tar extraction
+            # to prevent placement of files outside the target directory.
+            # https://docs.python.org/3.12/library/tarfile.html#tarfile.tar_filter
+            if sys.version_info >= (3, 12):
+                tar.extractall(dest, filter='data')
+            else:
+                tar.extractall(dest)
+
+class BuildKeyring(build_py):
+    def run(self):
+        super().run()
+
+class BuildKeyringPlatformWheel(bdist_wheel):
+    def finalize_options(self):
+        super().finalize_options()
+        self.root_is_pure = False
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.abspath(__file__))
-    download_credential_provider(root)
-    setuptools.setup(version=get_version(root))
+    dest = os.path.join(root, "src", "artifacts_keyring", "plugins")
+
+    # clean any previous build artifacts
+    if os.path.exists(dest):
+        print("Removing previous plugins artifacts in ", dest)
+        shutil.rmtree(dest)
+
+    download_credential_provider(dest)
+    
+    setup(
+        version=get_version(root),
+        cmdclass={
+            'build_py': BuildKeyring,
+            'bdist_wheel': BuildKeyringPlatformWheel,
+        },
+    )

@@ -8,11 +8,7 @@ from __future__ import absolute_import
 __author__ = "Microsoft Corporation <python@microsoft.com>"
 __version__ = "1.0.0rc0"
 
-import json
-import subprocess
-import sys
 import warnings
-
 from .support import urlsplit
 from .plugin import CredentialProvider
 

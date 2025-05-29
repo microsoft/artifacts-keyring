@@ -9,20 +9,17 @@ schedules:
 resources:
 - repo: self
 
-pool:
-  vmImage: windows-latest
-
 stages:
-- stage: Build
-  dependsOn: [] 
+- stage: BuildWheels
+  displayName: 'Build Platform-Specific Wheels'
+  dependsOn: []
   jobs:
-  - job: build
-    steps:
-    - template: build.yml
-      parameters:
-        publish: true
+  - template: build-wheels.yml
+    parameters:
+      publish: true
 
 - stage: Validate
+  displayName: 'Validation Stage'
   dependsOn: [] 
   jobs:
   - template: validate-setup.yml

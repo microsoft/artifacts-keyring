@@ -10,8 +10,6 @@ import os
 import requests
 import subprocess
 import sys
-import warnings
-import shutil
 
 from . import __version__
 from .support import Popen
@@ -41,7 +39,8 @@ class CredentialProvider(object):
                 "CredentialProvider.Microsoft"
             )
 
-            # if tool_path_root contains a self-contained binary, don't check for net
+            # if tool_path_root contains the runtimes directory, it means that the
+            # binary is self-contained and doesn't require a .NET install to run.
             is_dotnet_runtime_required = False
             if os.path.exists(tool_path_root):
                 tool_path_runtimes = os.path.join(

@@ -9,16 +9,16 @@ trigger:
 - master
 
 stages:
-- stage: Build
+- stage: BuildWheels
+  displayName: 'Build Platform-Specific Wheels'
   dependsOn: []
   jobs:
-  - job: build
-    steps:
-    - template: build.yml
-      parameters:
-        publish: false
+  - template: build-wheels.yml
+    parameters:
+      publish: true # Remove before merging, testing only
 
 - stage: Validate
-  dependsOn: []
+  displayName: 'Validation Stage'
+  dependsOn: [] 
   jobs:
   - template: validate-setup.yml
