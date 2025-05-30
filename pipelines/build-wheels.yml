@@ -35,6 +35,7 @@ jobs:
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
+      displayName: 'Publish win-x64 wheels'
       inputs:
         pathToPublish: 'wheel-win-x64'
         artifactName: 'wheels-win-x64'
@@ -79,11 +80,13 @@ jobs:
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
+      displayName: 'Publish osx-x64 wheels'
       inputs:
         pathToPublish: 'wheel-osx-x64'
         artifactName: 'wheels-osx-x64'
 
     - task: PublishBuildArtifacts@1
+      displayName: 'Publish osx-arm64 wheels'
       inputs:
         pathToPublish: 'wheel-osx-arm64'
         artifactName: 'wheels-osx-arm64'
@@ -126,11 +129,13 @@ jobs:
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
+      displayName: 'Publish linux-x64 wheels'
       inputs:
         pathToPublish: 'wheel-linux-x64'
         artifactName: 'wheels-linux-x64'
 
     - task: PublishBuildArtifacts@1
+      displayName: 'Publish linux-arm64 wheels'
       inputs:
         pathToPublish: 'wheel-linux-arm64'
         artifactName: 'wheels-linux-arm64'
