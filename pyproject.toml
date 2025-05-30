@@ -4,23 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
 # Don't build 32bit binaries, they aren't supported by the credential provider plugin
-skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-macosx_i386", "*-macosx_x86", "*-manylinux1_i686", "*-manylinux2010_i686", "*-manylinux2014_i686"]
+skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686", "*-macosx_i386", "*-macosx_x86", "*-manylinux2014_i686"]
 
 # Build binaries for everything supported by cibuildwheel, Python >= 3.6
-build = ["cp36-*","cp37-*","cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*"]
+# build = ["cp36-*","cp37-*","cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*","cp313-*"]
 
 # For local cibuildwheel debugging, you can build only a single version
 # build = ["cp312-*"]
 
-# Build universal2 wheels for macOS (x64 + arm64)
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
 
-# Build x86_64 wheels for Windows
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
 
-# Build x86_64 and aarch64 wheels for Linux
 [tool.cibuildwheel.linux]
 archs = ["x86_64", "aarch64"]
 manylinux-x86_64-image = "manylinux2014"
