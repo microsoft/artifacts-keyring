@@ -3,25 +3,27 @@ requires = ["setuptools>=42", "wheel", "setuptools_scm>=6.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-# Don't build 32bit binaries, they aren't supported by the credential provider plugin
-# musllinux will also be skipped as most distros are manylinux compatible
-skip = ["*-win32", "*-macosx_i386", "*-macosx_x86", "*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*"]
-
 # Build binaries for everything supported by cibuildwheel, Python >= 3.6
 # For local cibuildwheel debugging, you can build only a single version
 # build = ["cp312-*"]
 
+# For each platform below, don't build 32bit binaries, they aren't supported 
+# by the .NET credential provider plugin
 # cibuildwheel 3 will disable building pypy automatically
 enable = "pypy"
 
-[tool.cibuildwheel.macos]
-archs = ["x86_64", "arm64"]
-
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
+skip = ["*-win32"]
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+skip = ["*-macosx_i386", "*-macosx_x86"]
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64", "aarch64"]
+# musllinux will also be skipped as most distros are manylinux compatible
+skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*", "*pp*aarch64]
 manylinux-x86_64-image = "manylinux2014"
 manylinux-aarch64-image = "manylinux2014"
 # avoid running repair on linux because we package self-contained binaries explicitly
