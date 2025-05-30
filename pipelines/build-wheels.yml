@@ -130,7 +130,7 @@ jobs:
 - job: BuildLinuxARM
   displayName: 'Build Linux ARM64 Wheels'
   pool:
-    name: '1ES_ARM_Agent_Pool'
+    name: '1ESMsEngLinuxArm64'
     vmImage: 'ubuntu-latest'
   steps:
   - task: UsePythonVersion@0
