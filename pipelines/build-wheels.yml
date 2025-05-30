@@ -91,8 +91,8 @@ jobs:
         pathToPublish: 'wheel-osx-arm64'
         artifactName: 'wheels-osx-arm64'
 
-- job: BuildLinux
-  displayName: 'Build Linux Wheels'
+- job: BuildLinux64
+  displayName: 'Build Linux x64 Wheels'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -105,11 +105,6 @@ jobs:
     displayName: 'Pip Authenticate'
     inputs:
       artifactFeeds: 'PipelineTools/artifacts-credprovider'
-  
-  - script: |
-      # Set up QEMU emulation for ARM64 cross-compilation
-      docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    displayName: 'Set up QEMU emulation for ARM64'
   
   - script: |
       python -m pip install --upgrade pip
@@ -125,6 +120,36 @@ jobs:
       CIBW_ARCHS_LINUX: "x86_64"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-x64"
   
+  - ${{ if eq(parameters.publish, true) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish linux-x64 wheels'
+      inputs:
+        pathToPublish: 'wheel-linux-x64'
+        artifactName: 'wheels-linux-x64'
+
+- job: BuildLinuxARM
+  displayName: 'Build Linux ARM64 Wheels'
+  pool:
+    name: '1ES_ARM_Agent_Pool'
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - task: PipAuthenticate@1
+    displayName: 'Pip Authenticate'
+    inputs:
+      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+  
+  - script: |
+      python -m pip install --upgrade pip
+      pip install setuptools
+      pip install wheel
+      pip install cibuildwheel
+    displayName: 'Install build tools'
+  
   - script: |
       cibuildwheel --output-dir wheel-linux-arm64
     displayName: 'Build linux-arm64 wheels'
@@ -133,12 +158,6 @@ jobs:
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-arm64"
   
   - ${{ if eq(parameters.publish, true) }}:
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish linux-x64 wheels'
-      inputs:
-        pathToPublish: 'wheel-linux-x64'
-        artifactName: 'wheels-linux-x64'
-
     - task: PublishBuildArtifacts@1
       displayName: 'Publish linux-arm64 wheels'
       inputs:
