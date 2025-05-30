@@ -133,9 +133,9 @@ jobs:
     name: '1ESMsEngLinuxArm64'
     vmImage: 'ubuntu-latest'
   steps:
-  - script: |
-      sudo apt install python3
-      sudo apt install python3-pip
+  - bash: |
+      sudo apt-get install -y python3
+      sudo apt-get install -y python3-pip
     displayName: 'Install Python'
 
   - task: PipAuthenticate@1
