@@ -18,7 +18,7 @@ stages:
       publish: true # Remove before merging, testing only
 
 - stage: Validate
-  displayName: 'Validation Stage'
+  displayName: 'Validate Setup Binary Selection'
   dependsOn: [] 
   jobs:
   - template: validate-setup.yml

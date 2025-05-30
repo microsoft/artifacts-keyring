@@ -119,10 +119,6 @@ class BuildKeyringPlatformWheel(bdist_wheel):
         super().finalize_options()
         self.root_is_pure = False
 
-class KeyringDistribution(Distribution):
-    def has_ext_modules(foo):
-        return True
-
 if __name__ == "__main__":
     root = os.path.dirname(os.path.abspath(__file__))
     dest = os.path.join(root, "src", "artifacts_keyring", "plugins")
@@ -140,5 +136,4 @@ if __name__ == "__main__":
             'build_py': BuildKeyring,
             'bdist_wheel': BuildKeyringPlatformWheel,
         },
-        distclass=KeyringDistribution,
     )

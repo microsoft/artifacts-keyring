@@ -22,3 +22,5 @@ archs = ["AMD64"]
 archs = ["x86_64", "aarch64"]
 manylinux-x86_64-image = "manylinux2014"
 manylinux-aarch64-image = "manylinux2014"
+# avoid running repair on linux because we package self-contained binaries explicitly
+repair-wheel-command = ""
