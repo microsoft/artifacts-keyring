@@ -107,6 +107,11 @@ jobs:
       artifactFeeds: 'PipelineTools/artifacts-credprovider'
   
   - script: |
+      # Set up QEMU emulation for ARM64 cross-compilation
+      docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    displayName: 'Set up QEMU emulation for ARM64'
+  
+  - script: |
       python -m pip install --upgrade pip
       pip install setuptools
       pip install wheel
