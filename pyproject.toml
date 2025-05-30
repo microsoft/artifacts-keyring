@@ -23,7 +23,7 @@ skip = ["*-macosx_i386", "*-macosx_x86"]
 [tool.cibuildwheel.linux]
 archs = ["x86_64", "aarch64"]
 # musllinux will also be skipped as most distros are manylinux compatible
-skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*", "*pp*aarch64]
+skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*", "*pp*aarch64"]
 manylinux-x86_64-image = "manylinux2014"
 manylinux-aarch64-image = "manylinux2014"
 # avoid running repair on linux because we package self-contained binaries explicitly
