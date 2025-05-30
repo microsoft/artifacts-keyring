@@ -133,10 +133,10 @@ jobs:
     name: '1ESMsEngLinuxArm64'
     vmImage: 'ubuntu-latest'
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
+  - script: |
+      sudo apt install python3
+      sudo apt install python3-pip
+    displayName: 'Install Python'
 
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
