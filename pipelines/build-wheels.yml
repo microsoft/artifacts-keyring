@@ -127,45 +127,6 @@ jobs:
         pathToPublish: 'wheel-linux-x64'
         artifactName: 'wheels-linux-x64'
 
-- job: BuildLinuxARM
-  displayName: 'Build Linux ARM64 Wheels'
-  pool:
-    name: '1ESMsEngLinuxArm64'
-    vmImage: 'ubuntu-latest'
-  steps:
-  - bash: |
-      export PATH=$PATH:/usr/bin/
-      sudo apt-get update
-      sudo apt-get install -y python3
-      sudo apt-get install -y python3-pip
-    displayName: 'Install Python'
-
-  - task: PipAuthenticate@1
-    displayName: 'Pip Authenticate'
-    inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
-  
-  - script: |
-      python -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
-      pip install cibuildwheel
-    displayName: 'Install build tools'
-  
-  - script: |
-      cibuildwheel --output-dir wheel-linux-arm64
-    displayName: 'Build linux-arm64 wheels'
-    env:
-      CIBW_ARCHS_LINUX: "aarch64"
-      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-arm64"
-  
-  - ${{ if eq(parameters.publish, true) }}:
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish linux-arm64 wheels'
-      inputs:
-        pathToPublish: 'wheel-linux-arm64'
-        artifactName: 'wheels-linux-arm64'
-
 - job: BuildSDist
   displayName: 'Build Source Distribution'
   pool:
