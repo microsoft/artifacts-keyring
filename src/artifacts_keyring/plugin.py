@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 import json
 import os
+import platform
 import requests
 import subprocess
 import sys
@@ -70,7 +71,7 @@ class CredentialProvider(object):
                 
                 self.exe = ["dotnet", "exec", tool_path]
             else:
-                if sys.platform.system().lower() == "darwin":
+                if platform.system().lower() == "darwin":
                     tool_path = os.path.join(
                         tool_path_root,
                         "CredentialProvider.Microsoft"
