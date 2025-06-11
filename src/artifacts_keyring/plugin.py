@@ -70,10 +70,16 @@ class CredentialProvider(object):
                 
                 self.exe = ["dotnet", "exec", tool_path]
             else:
+                if sys.platform.system().lower() == "darwin":
+                    tool_path = os.path.join(
+                        tool_path_root,
+                        "CredentialProvider.Microsoft"
+                    )
+
                 self.exe = [tool_path]
             
 
-        if not os.path.exists(tool_path):
+        if not os.path.isfile(tool_path):
             raise RuntimeError("Unable to find credential provider in the expected path: " + tool_path)
 
     def get_credentials(self, url):
