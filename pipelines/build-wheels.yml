@@ -67,7 +67,15 @@ jobs:
     displayName: 'Build osx-x64 wheels'
     env:
       CIBW_ARCHS_MACOS: "x86_64"
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      MACOSX_DEPLOYMENT_TARGET: "10.9"
+      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-x64"
+
+  - script: |
+      cibuildwheel --output-dir wheel-osx-universal2
+    displayName: 'Build osx-x64 universal2 wheels'
+    env:
+      CIBW_ARCHS_MACOS: "universal2"
+      MACOSX_DEPLOYMENT_TARGET: "10.9"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-x64"
 
   - script: |
@@ -75,7 +83,7 @@ jobs:
     displayName: 'Build osx-arm64 wheels'
     env:
       CIBW_ARCHS_MACOS: "arm64"
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      MACOSX_DEPLOYMENT_TARGET: "10.9"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-arm64"
   
   - ${{ if eq(parameters.publish, true) }}:
