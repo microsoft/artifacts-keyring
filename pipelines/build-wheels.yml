@@ -71,14 +71,6 @@ jobs:
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-x64"
 
   - script: |
-      cibuildwheel --output-dir wheel-osx-universal2
-    displayName: 'Build osx-x64 universal2 wheels'
-    env:
-      CIBW_ARCHS_MACOS: "universal2"
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
-      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "osx-x64"
-
-  - script: |
       cibuildwheel --output-dir wheel-osx-arm64
     displayName: 'Build osx-arm64 wheels'
     env:
