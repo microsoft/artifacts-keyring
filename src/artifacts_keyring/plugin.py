@@ -40,14 +40,14 @@ class CredentialProvider(object):
             )
 
             # if tool_path_root contains the runtimes directory, it means that the
-            # binary is self-contained and doesn't require a .NET install to run.
+            # binary is not self-contained and requires a .NET install to run.
             is_dotnet_runtime_required = False
             if os.path.exists(tool_path_root):
                 tool_path_runtimes = os.path.join(
                     tool_path_root,
                     "runtimes"
                 )
-                if not os.path.exists(tool_path_runtimes):
+                if os.path.exists(tool_path_runtimes):
                     is_dotnet_runtime_required = True
 
             tool_path = os.path.join(
