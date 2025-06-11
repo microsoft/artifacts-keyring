@@ -17,7 +17,7 @@ archs = ["AMD64"]
 skip = ["*-win32"]
 
 [tool.cibuildwheel.macos]
-archs = ["x86_64", "arm64"]
+archs = ["x86_64", "arm64", "universal2"]
 skip = ["*-macosx_i386", "*-macosx_x86"]
 
 [tool.cibuildwheel.linux]
