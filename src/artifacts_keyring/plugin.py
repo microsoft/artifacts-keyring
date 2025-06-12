@@ -40,10 +40,22 @@ class CredentialProvider(object):
                 "CredentialProvider.Microsoft"
             )
 
-            # if tool_path_root contains the runtimes directory, it means that the
-            # binary is not self-contained and requires a .NET install to run.
             is_dotnet_runtime_required = False
             if os.path.exists(tool_path_root):
+                # Ensure the plugins directory executable permissions are set so Python can execute
+                # the Credential Provider plugin.
+                try:
+                    os.chmod(tool_path_root, 0o755)
+                except Exception as e:
+                    raise RuntimeError(
+                        "Failed to set executable permissions for the Credential Provider plugins directory "
+                        + tool_path_root 
+                        + ". Please ensure the directory is accessible and has the correct permissions. Error: "
+                        + str(e)
+                    )
+                
+                # If tool_path_root contains the runtimes directory, it means that the
+                # binary is not self-contained and requires a .NET install to run.
                 tool_path_runtimes = os.path.join(
                     tool_path_root,
                     "runtimes"
@@ -51,12 +63,12 @@ class CredentialProvider(object):
                 if os.path.exists(tool_path_runtimes):
                     is_dotnet_runtime_required = True
 
-            tool_path = os.path.join(
-                tool_path_root,
-                "CredentialProvider.Microsoft.dll"
-            )
-
             if is_dotnet_runtime_required:
+                tool_path = os.path.join(
+                    tool_path_root,
+                    "CredentialProvider.Microsoft.dll"
+                )
+
                 try:
                     # check to see if any dotnet runtimes are installed. Not checking specific versions.
                     output = subprocess.check_output(["dotnet", "--list-runtimes"]).decode().strip()
@@ -71,12 +83,19 @@ class CredentialProvider(object):
                 
                 self.exe = ["dotnet", "exec", tool_path]
             else:
-                if platform.system().lower() == "darwin":
+                # for self-contained binaries, the executable is not the DLL
+                if platform.system().lower() == "windows":
+                    tool_path = os.path.join(
+                        tool_path_root,
+                        "CredentialProvider.Microsoft.exe"
+                    )
+                # linux and macOS
+                else:
                     tool_path = os.path.join(
                         tool_path_root,
                         "CredentialProvider.Microsoft"
                     )
-
+                
                 self.exe = [tool_path]
             
 
