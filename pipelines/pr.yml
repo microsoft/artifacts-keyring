@@ -15,7 +15,7 @@ stages:
   jobs:
   - template: build-wheels.yml
     parameters:
-      publish: true # Remove before merging, testing only
+      publish: false # Enable this to publish wheels to the build artifacts for validation
 
 - stage: Validate
   displayName: 'Validate Setup Binary Selection'
