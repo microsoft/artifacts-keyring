@@ -50,7 +50,7 @@ class CredentialProvider(object):
                     raise RuntimeError(
                         "Failed to set executable permissions for the Credential Provider plugins directory "
                         + tool_path_root 
-                        + ". Please ensure the directory is accessible and has the correct permissions. Error: "
+                        + ". Please ensure the directory has the correct access permissions (755). Error: "
                         + str(e)
                     )
                 
