@@ -100,10 +100,10 @@ jobs:
     # see https://github.com/pypa/manylinux
     image: 'quay.io/pypa/manylinux2014_x86_64'
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
+  # - task: UsePythonVersion@0
+  #   inputs:
+  #     versionSpec: '3.x'
+  #     addToPath: true
 
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
