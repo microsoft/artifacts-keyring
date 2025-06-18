@@ -98,7 +98,7 @@ jobs:
   container:
     # for compatability with cibuildwheel
     # see https://github.com/pypa/manylinux
-    image: 'quay.io/pypa/manylinux_2_28_x86_64'
+    image: 'quay.io/pypa/manylinux2014_x86_64'
   steps:
   - task: UsePythonVersion@0
     inputs:
