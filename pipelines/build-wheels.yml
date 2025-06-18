@@ -111,7 +111,7 @@ jobs:
       artifactFeeds: 'PipelineTools/artifacts-credprovider'
   
   - script: |
-      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Agent.ToolsDirectory)/Python/3.13.4/x64/lib
+      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Agent.ToolsDirectory)/Python/3.13.4/lib
       python -m pip install --upgrade pip
       pip install setuptools
       pip install wheel
