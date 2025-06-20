@@ -17,7 +17,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python -m pip install --upgrade pip
@@ -53,7 +53,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python -m pip install --upgrade pip
@@ -104,7 +104,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python3 -m pip install --upgrade pip
@@ -140,7 +140,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python -m pip install --upgrade pip build
