@@ -24,7 +24,7 @@ jobs:
       pip install setuptools
       pip install wheel
       pip install cibuildwheel
-    displayName: 'Install build tools'
+    displayName: 'Install build dependencies'
   
   - script: |
       cibuildwheel --output-dir wheel-win-x64
@@ -60,7 +60,7 @@ jobs:
       pip install setuptools
       pip install wheel
       pip install cibuildwheel
-    displayName: 'Install build tools'
+    displayName: 'Install build dependencies'
   
   - script: |
       cibuildwheel --output-dir wheel-osx-x64
@@ -111,7 +111,7 @@ jobs:
       pip install setuptools
       pip install wheel
       pip install cibuildwheel
-    displayName: 'Install build tools'
+    displayName: 'Install build dependencies'
   
   - script: |
       cibuildwheel --output-dir wheel-linux-x64
