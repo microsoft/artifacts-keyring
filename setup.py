@@ -119,16 +119,33 @@ class BuildKeyringPlatformWheel(bdist_wheel):
         super().finalize_options()
         self.root_is_pure = False
 
+class KeyringDistribution(Distribution):
+    def has_ext_modules(self):
+        return True
+
 if __name__ == "__main__":
     root = os.path.dirname(os.path.abspath(__file__))
     dest = os.path.join(root, "src", "artifacts_keyring", "plugins")
 
-    # clean any previous build artifacts
+    # Clean any previous build artifacts
     if os.path.exists(dest):
         print("Removing previous plugins artifacts in ", dest)
         shutil.rmtree(dest)
 
     download_credential_provider(dest)
+
+	# Fix for liblttng-ust.so.0 not being found on Debian 12 and later.
+    # See https://github.com/dotnet/runtime/issues/57784 for more info.
+    clr_trace_path = os.path.join(
+        dest,
+        "plugins",
+        "netcore",
+        "CredentialProvider.Microsoft",
+        "libcoreclrtraceptprovider.so",
+    )
+    if os.path.exists(clr_trace_path):
+        print("Removing libcoreclrtraceptprovider.so from plugins directory")
+        os.remove(clr_trace_path)
     
     setup(
         version=get_version(root),
@@ -136,4 +153,5 @@ if __name__ == "__main__":
             'build_py': BuildKeyring,
             'bdist_wheel': BuildKeyringPlatformWheel,
         },
+        distclass=KeyringDistribution,
     )

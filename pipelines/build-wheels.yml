@@ -96,10 +96,10 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
+  - script: |
+      sudo apt-get update -y
+      sudo apt-get install -y python3-full
+    displayName: 'Install build tools'
 
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
@@ -107,7 +107,7 @@ jobs:
       artifactFeeds: 'PipelineTools/artifacts-credprovider'
   
   - script: |
-      python -m pip install --upgrade pip
+      python3 -m pip install --upgrade pip
       pip install setuptools
       pip install wheel
       pip install cibuildwheel

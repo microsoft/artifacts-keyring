@@ -24,7 +24,5 @@ skip = ["*-macosx_i386", "*-macosx_x86"]
 archs = ["x86_64", "aarch64"]
 # musllinux will also be skipped as most distros are manylinux compatible
 skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*"]
-manylinux-x86_64-image = "manylinux2014"
-manylinux-aarch64-image = "manylinux2014"
-# avoid running repair on linux because we package self-contained binaries explicitly
-repair-wheel-command = ""
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
