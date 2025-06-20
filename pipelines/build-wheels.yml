@@ -95,15 +95,11 @@ jobs:
   displayName: 'Build Linux x64 Wheels'
   pool:
     vmImage: 'ubuntu-latest'
-  container:
-    # for compatability with cibuildwheel
-    # see https://github.com/pypa/manylinux
-    image: 'quay.io/pypa/manylinux_2_28_x86_64'
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
+  - script: |
+      sudo apt-get update -y
+      sudo apt-get install -y python3-full
+    displayName: 'Install build tools'
 
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
@@ -111,8 +107,7 @@ jobs:
       artifactFeeds: 'PipelineTools/artifacts-credprovider'
   
   - script: |
-      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Agent.ToolsDirectory)/Python/3.13.4/lib
-      python -m pip install --upgrade pip
+      python3 -m pip install --upgrade pip
       pip install setuptools
       pip install wheel
       pip install cibuildwheel
