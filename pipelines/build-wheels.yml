@@ -17,14 +17,14 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python -m pip install --upgrade pip
       pip install setuptools
       pip install wheel
       pip install cibuildwheel
-    displayName: 'Install build tools'
+    displayName: 'Install build dependencies'
   
   - script: |
       cibuildwheel --output-dir wheel-win-x64
@@ -53,14 +53,14 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python -m pip install --upgrade pip
       pip install setuptools
       pip install wheel
       pip install cibuildwheel
-    displayName: 'Install build tools'
+    displayName: 'Install build dependencies'
   
   - script: |
       cibuildwheel --output-dir wheel-osx-x64
@@ -104,14 +104,14 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python3 -m pip install --upgrade pip
       pip install setuptools
       pip install wheel
       pip install cibuildwheel
-    displayName: 'Install build tools'
+    displayName: 'Install build dependencies'
   
   - script: |
       cibuildwheel --output-dir wheel-linux-x64
@@ -140,7 +140,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'PipelineTools/artifacts-credprovider'
+      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
   
   - script: |
       python -m pip install --upgrade pip build
