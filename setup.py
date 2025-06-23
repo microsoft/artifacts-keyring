@@ -67,9 +67,9 @@ def get_os_runtime_url(runtime_var):
         return CREDENTIAL_PROVIDER_NET8
 
     if "osx" in runtime_var:
-        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8{runtime_var}")
+        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_var}")
 
-    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8{runtime_var}")
+    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
 
 def get_download_url():
     # When building the platform wheels in CI, use the self-contained version of the credential provider.
