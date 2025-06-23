@@ -67,7 +67,7 @@ jobs:
     displayName: 'Build osx-x64 wheels'
     env:
       CIBW_ARCHS_MACOS: "x86_64"
-      CIBW_BEFORE_BUILD: "export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64"
       MACOSX_DEPLOYMENT_TARGET: "10.15"
 
   - script: |
@@ -75,7 +75,7 @@ jobs:
     displayName: 'Build osx-arm64 wheels'
     env:
       CIBW_ARCHS_MACOS: "arm64"
-      CIBW_BEFORE_BUILD: "export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64"
       MACOSX_DEPLOYMENT_TARGET: "10.15"
   
   - ${{ if eq(parameters.publish, true) }}:
@@ -118,7 +118,7 @@ jobs:
     displayName: 'Build linux-x64 wheels'
     env:
       CIBW_ARCHS_LINUX: "x86_64"
-      CIBW_BEFORE_BUILD: "export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
       ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-x64"
   
   - ${{ if eq(parameters.publish, true) }}:
