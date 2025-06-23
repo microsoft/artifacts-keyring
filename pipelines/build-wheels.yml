@@ -31,7 +31,7 @@ jobs:
     displayName: 'Build win-x64 wheels'
     env:
       CIBW_ARCHS_WINDOWS: "AMD64"
-      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "win-x64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x64"
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -119,7 +119,6 @@ jobs:
     env:
       CIBW_ARCHS_LINUX: "x86_64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
-      ARTIFACTS_CREDENTIAL_PROVIDER_RID: "linux-x64"
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
