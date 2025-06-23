@@ -22,7 +22,7 @@ CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8_ZIP = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.zip"
 CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC"
-CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_RID"
+CREDENTIAL_PROVIDER_RID_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_RID"
 
 def get_version(root):
     src = os.path.join(root, "src", "artifacts_keyring", "__init__.py")
@@ -44,34 +44,39 @@ def get_runtime_identifier():
     elif os_system == "windows":
         runtime_id = "win"
     else:
-        print(f"Warning: Unsupported OS: {os_system}. Please set the {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} environment variable to specify a runtime identifier.")
+        print(f"Warning: Unsupported OS: {os_system}. Please set the {CREDENTIAL_PROVIDER_RID_VAR_NAME} environment variable to specify a runtime identifier.")
         return ""
 
-    if os_arch.startswith('aarch64') or os_arch.startswith('arm64'):
+    if "aarch64" in os_arch or "arm64" in os_arch:
         if (os_system == "windows"): # windows on ARM runs x64 binaries
             runtime_id += "-x64"
         else:
             runtime_id += "-arm64"
-    if os_arch.startswith('x86_64') or os_arch.startswith('amd64'):
+    elif "x86_64" in os_arch or "amd64" in os_arch:
         runtime_id += "-x64"
     else:
-        print(f"Warning: Unsupported architecture: {os_arch}. Please set the {CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME} environment variable to specify a runtime identifier.")
+        print(f"Warning: Unsupported architecture: {os_arch}. Please set the {CREDENTIAL_PROVIDER_RID_VAR_NAME} environment variable to specify a runtime identifier.")
         return ""
 
     return runtime_id
 
 def get_os_runtime_url(runtime_var):
-    if runtime_var.startswith("osx"):
-        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_var}")
+    if runtime_var == "" and "osx" in runtime_var:
+        return CREDENTIAL_PROVIDER_NET8_ZIP
+    elif runtime_var == "":
+        return CREDENTIAL_PROVIDER_NET8
 
-    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
+    if "osx" in runtime_var:
+        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8{runtime_var}")
+
+    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8{runtime_var}")
 
 def get_download_url():
     # When building the platform wheels in CI, use the self-contained version of the credential provider.
     # In these cases, check ARTIFACTS_CREDENTIAL_PROVIDER_RID to determine the desired runtime identifier.
-    if CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME in os.environ and \
-        os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]:
-            runtime_var = str(os.environ[CREDENTIAL_PROVIDER_SELF_CONTAINED_VAR_NAME]).lower()
+    if CREDENTIAL_PROVIDER_RID_VAR_NAME in os.environ and \
+        os.environ[CREDENTIAL_PROVIDER_RID_VAR_NAME]:
+            runtime_var = str(os.environ[CREDENTIAL_PROVIDER_RID_VAR_NAME]).lower()
             return get_os_runtime_url(runtime_var)
     
     # Specify whether they want self-contained auto-detection or not.
@@ -106,7 +111,7 @@ def download_credential_provider(dest):
             # to prevent placement of files outside the target directory.
             # https://docs.python.org/3.12/library/tarfile.html#tarfile.tar_filter
             if sys.version_info >= (3, 12):
-                tar.extractall(dest, filter='data')
+                tar.extractall(dest, filter="data")
             else:
                 tar.extractall(dest)
 
@@ -150,8 +155,8 @@ if __name__ == "__main__":
     setup(
         version=get_version(root),
         cmdclass={
-            'build_py': BuildKeyring,
-            'bdist_wheel': BuildKeyringPlatformWheel,
+            "build_py": BuildKeyring,
+            "bdist_wheel": BuildKeyringPlatformWheel,
         },
         distclass=KeyringDistribution,
     )
