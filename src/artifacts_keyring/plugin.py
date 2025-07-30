@@ -45,7 +45,9 @@ class CredentialProvider(object):
                 # Ensure the plugins directory executable permissions are set so Python can execute
                 # the Credential Provider plugin.
                 try:
-                    os.chmod(tool_path_root, 0o755)
+                    tool_path = os.path.join(tool_path_root, 'CredentialProvider.Microsoft')
+                    if os.path.exists(tool_path):
+                        os.chmod(tool_path, 0o755)
                 except Exception as e:
                     raise RuntimeError(
                         "Failed to set executable permissions for the Credential Provider plugins directory "
@@ -166,8 +168,15 @@ class CredentialProvider(object):
 
         if proc.returncode != 0:
             stderr = proc.stderr.read().decode("utf-8", "ignore")
-            raise RuntimeError("Failed to get credentials: process with PID {pid} exited with code {code}; additional error message: {error}"
-                .format(pid=proc.pid, code=proc.returncode, error=stderr))
+
+            error_msg = "Failed to get credentials: process with PID {pid} exited with code {code}".format(
+                pid=proc.pid, code=proc.returncode
+            )
+            if stderr.strip():
+                error_msg += "; additional error message: {error}".format(error=stderr)
+            else:
+                error_msg += "; no additional error message available, see Credential Provider logs above for details."
+            raise RuntimeError(error_msg)
 
         try:
             # stdout is expected to be UTF-8 encoded JSON, so decoding errors are not ignored here.
