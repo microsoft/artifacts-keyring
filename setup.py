@@ -18,7 +18,7 @@ from setuptools import Distribution, setup
 from setuptools.command.build_py import build_py
 from setuptools.command.bdist_wheel import bdist_wheel
 
-CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.1/"
+CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v2.0.0/"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8_ZIP = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.zip"
 CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC"
@@ -67,9 +67,9 @@ def get_os_runtime_url(runtime_var):
         return CREDENTIAL_PROVIDER_NET8
 
     if "osx" in runtime_var:
-        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_var}")
+        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".{runtime_var}")
 
-    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
+    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".{runtime_var}")
 
 def get_download_url():
     # When building the platform wheels in CI, use the self-contained version of the credential provider.
