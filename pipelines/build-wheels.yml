@@ -2,6 +2,8 @@ parameters:
 - name: publish
   type: boolean
   default: false
+- name: artifactFeed
+  type: string
 
 jobs:
 - job: BuildWindows
@@ -17,7 +19,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed}}
   
   - script: |
       python -m pip install --upgrade pip
@@ -53,7 +55,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed}}
   
   - script: |
       python3 -m pip install --upgrade pip
@@ -104,7 +106,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed}}
   
   - script: |
       python3 -m pip install --upgrade pip
@@ -140,7 +142,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed}}
   
   - script: |
       python -m pip install --upgrade pip build

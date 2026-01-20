@@ -23,9 +23,12 @@ stages:
   - template: build-wheels.yml
     parameters:
       publish: false # Enable this to publish wheels to the build artifacts for validation
+      artifactFeed: 'PipelineTools/artifacts-credprovider'
 
 - stage: Validate
   displayName: 'Validate Setup Binary Selection'
   dependsOn: [] 
   jobs:
   - template: validate-setup.yml
+    parameters:
+      artifactFeed: 'PipelineTools/artifacts-credprovider'

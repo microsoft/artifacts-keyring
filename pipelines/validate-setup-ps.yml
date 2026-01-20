@@ -8,13 +8,15 @@ parameters:
 - name: validateKeyringBinary
   type: boolean
   default: true
+- name: artifactFeed
+  type: string
 
 steps:
 - checkout: ${{ parameters.repo }}
 - task: PipAuthenticate@1
   displayName: 'Pip authenticate'
   inputs:
-    artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+    artifactFeeds: ${{ parameters.artifactFeed}}
 - script: pip install build
   displayName: 'Install dependencies'
 - task: PowerShell@2

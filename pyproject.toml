@@ -5,7 +5,11 @@ build-backend = "setuptools.build_meta"
 [tool.cibuildwheel]
 # Build binaries for everything supported by cibuildwheel, Python >= 3.7
 # For local cibuildwheel debugging, you can build only a single version
-# build = ["cp312-*"]
+# build = ["cp313-*"]
+
+# Explicitly build only supported stable Python versions (3.9-3.13)
+# Update this list when new Python versions are released and stable
+build = ["cp39-*", "cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 
 # For each platform below, don't build 32bit binaries, they aren't supported 
 # by the .NET credential provider plugin
@@ -26,3 +30,6 @@ archs = ["x86_64", "aarch64"]
 skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*"]
 manylinux-x86_64-image = "manylinux_2_28"
 manylinux-aarch64-image = "manylinux_2_28"
+# Disable auditwheel repair - the bundled .NET credential provider binaries
+# are self-contained and don't need manylinux compliance
+repair-wheel-command = ""

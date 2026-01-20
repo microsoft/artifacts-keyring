@@ -17,9 +17,12 @@ stages:
   - template: build-wheels.yml
     parameters:
       publish: true
+      artifactFeed: 'Azure Artifacts/Azure-Artifacts'
 
 - stage: Validate
   displayName: 'Validate Setup Binary Selection'
   dependsOn: [] 
   jobs:
   - template: validate-setup.yml
+    parameters:
+      artifactFeed: 'Azure Artifacts/Azure-Artifacts'
