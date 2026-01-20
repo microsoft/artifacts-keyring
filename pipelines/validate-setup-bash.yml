@@ -16,7 +16,7 @@ steps:
 - task: PipAuthenticate@1
   displayName: 'Pip authenticate'
   inputs:
-    artifactFeeds: ${{ parameters.artifactFeed}}
+    artifactFeed: ${{ parameters.artifactFeed}}
 - script: pip install build
   displayName: 'Install dependencies'
 - bash: |
