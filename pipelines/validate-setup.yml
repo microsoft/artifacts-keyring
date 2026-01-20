@@ -10,7 +10,7 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.win-x64.NuGet.CredentialProvider'
 - job: WindowsInstallNet8Fallback
@@ -20,7 +20,7 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC;]true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
@@ -31,7 +31,7 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]linux-x64"
       expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
@@ -43,7 +43,7 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC=true
       expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
@@ -54,7 +54,7 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
 - job: LinuxInstallNet8linuxx64
@@ -64,7 +64,7 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64
       expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
@@ -75,7 +75,7 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
       expectedCredentialProviderVersion: 'Microsoft.linux-arm64.NuGet.CredentialProvider'
@@ -87,7 +87,7 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64
       expectedCredentialProviderVersion: 'Microsoft.osx-arm64.NuGet.CredentialProvider'
@@ -99,7 +99,7 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64
       expectedCredentialProviderVersion: 'Microsoft.osx-x64.NuGet.CredentialProvider'
@@ -111,7 +111,7 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.osx-x64.NuGet.CredentialProvider'
 - job: MacOSArm64Net8Install
@@ -121,7 +121,7 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]osx-arm64"
       expectedCredentialProviderVersion: 'Microsoft.osx-arm64.NuGet.CredentialProvider'
