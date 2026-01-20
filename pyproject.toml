@@ -7,10 +7,6 @@ build-backend = "setuptools.build_meta"
 # For local cibuildwheel debugging, you can build only a single version
 # build = ["cp313-*"]
 
-# Explicitly build only supported stable Python versions (3.9-3.13)
-# Update this list when new Python versions are released and stable
-build = ["cp39-*", "cp310-*", "cp311-*", "cp312-*", "cp313-*"]
-
 # For each platform below, don't build 32bit binaries, they aren't supported 
 # by the .NET credential provider plugin
 # cibuildwheel 3 will disable building pypy automatically

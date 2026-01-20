@@ -23,8 +23,6 @@ jobs:
   
   - script: |
       python -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
       pip install cibuildwheel
     displayName: 'Install build dependencies'
   
@@ -59,8 +57,6 @@ jobs:
   
   - script: |
       python3 -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
       pip install cibuildwheel
     displayName: 'Install build dependencies'
   
@@ -110,8 +106,6 @@ jobs:
   
   - script: |
       python3 -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
       pip install cibuildwheel
     displayName: 'Install build dependencies'
   
