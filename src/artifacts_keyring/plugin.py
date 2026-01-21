@@ -47,7 +47,10 @@ class CredentialProvider(object):
                 try:
                     tool_path = os.path.join(tool_path_root, 'CredentialProvider.Microsoft')
                     if os.path.exists(tool_path):
-                        os.chmod(tool_path, 0o755)
+                        # Only chmod if the file doesn't already have the required execute permission
+                        current_mode = os.stat(tool_path).st_mode
+                        if not (current_mode & 0o111):  # Check if any execute bit is set
+                            os.chmod(tool_path, 0o755)
                 except Exception as e:
                     raise RuntimeError(
                         "Failed to set executable permissions for the Credential Provider plugins directory "
