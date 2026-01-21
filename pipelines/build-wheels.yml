@@ -61,7 +61,7 @@ jobs:
   
   - script: |
       python3 -m pip install --upgrade pip
-      # Use --only-binary to prevent building patchelf from source on macOS
+      # Work around for https://github.com/pypa/cibuildwheel/issues/2649
       pip install cibuildwheel --only-binary patchelf
     displayName: 'Install build dependencies'
   
