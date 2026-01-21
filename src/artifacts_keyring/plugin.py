@@ -143,7 +143,7 @@ class CredentialProvider(object):
             os.environ[self._NON_INTERACTIVE_VAR_NAME] and \
             str(os.environ[self._NON_INTERACTIVE_VAR_NAME]).lower() == "true"
 
-        proc = Popen(
+        with Popen(
             self.exe + [
                 "-Uri", url,
                 "-IsRetry", str(is_retry),
@@ -151,41 +151,40 @@ class CredentialProvider(object):
                 "-CanShowDialog", "True",
                 "-OutputFormat", "Json"
             ],
-            stdin=subprocess.PIPE,
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
-        )
+        ) as proc:
+            # Read all standard error first, which may either display
+            # errors from the credential provider or instructions
+            # from it for Device Flow authentication.
+            for stderr_line in iter(proc.stderr.readline, b''):
+                line = stderr_line.decode("utf-8", "ignore")
+                sys.stderr.write(line)
+                sys.stderr.flush()
 
-        # Read all standard error first, which may either display
-        # errors from the credential provider or instructions
-        # from it for Device Flow authentication.
-        for stderr_line in iter(proc.stderr.readline, b''):
-            line = stderr_line.decode("utf-8", "ignore")
-            sys.stderr.write(line)
-            sys.stderr.flush()
+            proc.wait()
 
-        proc.wait()
+            if proc.returncode != 0:
+                stderr = proc.stderr.read().decode("utf-8", "ignore")
 
-        if proc.returncode != 0:
-            stderr = proc.stderr.read().decode("utf-8", "ignore")
+                error_msg = "Failed to get credentials: process with PID {pid} exited with code {code}".format(
+                    pid=proc.pid, code=proc.returncode
+                )
+                if stderr.strip():
+                    error_msg += "; additional error message: {error}".format(error=stderr)
+                else:
+                    error_msg += "; no additional error message available, see Credential Provider logs above for details."
+                raise RuntimeError(error_msg)
 
-            error_msg = "Failed to get credentials: process with PID {pid} exited with code {code}".format(
-                pid=proc.pid, code=proc.returncode
-            )
-            if stderr.strip():
-                error_msg += "; additional error message: {error}".format(error=stderr)
-            else:
-                error_msg += "; no additional error message available, see Credential Provider logs above for details."
-            raise RuntimeError(error_msg)
+            try:
+                # stdout is expected to be UTF-8 encoded JSON, so decoding errors are not ignored here.
+                payload = proc.stdout.read().decode("utf-8")
+            except ValueError:
+                raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be decoded using UTF-8.")
 
-        try:
-            # stdout is expected to be UTF-8 encoded JSON, so decoding errors are not ignored here.
-            payload = proc.stdout.read().decode("utf-8")
-        except ValueError:
-            raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be decoded using UTF-8.")
-
-        try:
-            parsed = json.loads(payload)
-            return parsed["Username"], parsed["Password"]
-        except ValueError:
-            raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be parsed as JSON.")
+            try:
+                parsed = json.loads(payload)
+                return parsed["Username"], parsed["Password"]
+            except ValueError:
+                raise RuntimeError("Failed to get credentials: the Credential Provider's output could not be parsed as JSON.")
