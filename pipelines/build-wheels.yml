@@ -67,7 +67,7 @@ jobs:
     env:
       CIBW_ARCHS_MACOS: "x86_64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64"
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
 
   - script: |
       cibuildwheel --output-dir wheel-osx-arm64
@@ -75,7 +75,7 @@ jobs:
     env:
       CIBW_ARCHS_MACOS: "arm64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64"
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
