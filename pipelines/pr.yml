@@ -24,6 +24,7 @@ stages:
     parameters:
       publish: false # Enable this to publish wheels to the build artifacts for validation
       artifactFeed: 'PipelineTools/artifacts-credprovider'
+      cibuildwheelPythonUrl: 'https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/artifacts-credprovider/pypi/simple/'
 
 - stage: Validate
   displayName: 'Validate Setup Binary Selection'

@@ -4,6 +4,8 @@ parameters:
   default: false
 - name: artifactFeed
   type: string
+- name: cibuildwheelPythonUrl
+  type: string
 
 jobs:
 - job: BuildWindows
@@ -32,6 +34,8 @@ jobs:
     env:
       CIBW_ARCHS_WINDOWS: "AMD64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -68,6 +72,8 @@ jobs:
       CIBW_ARCHS_MACOS: "x86_64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64"
       MACOSX_DEPLOYMENT_TARGET: "11.0"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
 
   - script: |
       cibuildwheel --output-dir wheel-osx-arm64
@@ -76,6 +82,8 @@ jobs:
       CIBW_ARCHS_MACOS: "arm64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64"
       MACOSX_DEPLOYMENT_TARGET: "11.0"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}}}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -116,6 +124,8 @@ jobs:
     env:
       CIBW_ARCHS_LINUX: "x86_64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
