@@ -33,11 +33,32 @@ def get_version(root):
     m = re.search(r"__version__\s*=\s*['\"](.+?)['\"]", txt)
     return m.group(1) if m else "0.1.0"
 
+def is_musl():
+    try:
+        # Check if ldd output contains 'musl'
+        import subprocess
+        result = subprocess.run(['ldd', '--version'], capture_output=True, text=True, stderr=subprocess.STDOUT)
+        output = result.stdout + (result.stderr or '')
+        if 'musl' in output.lower():
+            return True
+    except (FileNotFoundError, subprocess.SubprocessError):
+        pass
+    
+    # Fallback: check for /etc/alpine-release (Alpine-specific)
+    if os.path.exists('/etc/alpine-release'):
+        return True
+    
+    return False
+
 def get_runtime_identifier():
     os_system = platform.system().lower()
     os_arch = platform.machine().lower()
     
     if os_system == "linux":
+        # musl-based systems (e.g., Alpine Linux) should use the default non-self-contained version
+        if is_musl():
+            print("Detected musl libc. Using default (non-self-contained) credential provider.")
+            return ""
         runtime_id = "linux"
     elif os_system == "darwin":
         runtime_id = "osx"
