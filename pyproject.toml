@@ -26,6 +26,3 @@ archs = ["x86_64", "aarch64"]
 skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*"]
 manylinux-x86_64-image = "manylinux_2_28"
 manylinux-aarch64-image = "manylinux_2_28"
-# Disable auditwheel repair - the bundled .NET credential provider binaries
-# are self-contained and don't need manylinux compliance
-repair-wheel-command = ""
