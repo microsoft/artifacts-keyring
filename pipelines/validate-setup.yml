@@ -36,17 +36,6 @@ jobs:
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]linux-x64"
       expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
       validateKeyringBinary: false
-- job: LinuxInstalllNet8Fallback
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - template: validate-setup-bash.yml@self
-    parameters:
-      repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
-      scriptEnvVariables: |
-        export ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC=true
-      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
 - job: LinuxInstallNet8
   pool:
     vmImage: ubuntu-latest
@@ -56,53 +45,7 @@ jobs:
       repo: self
       artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: ''
-      expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
-- job: LinuxInstallNet8linuxx64
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - template: validate-setup-bash.yml@self
-    parameters:
-      repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
-      scriptEnvVariables: |
-        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64
-      expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
-- job: LinuxInstallNet8linuxarm64
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - template: validate-setup-bash.yml@self
-    parameters:
-      repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
-      scriptEnvVariables: |
-        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
-      expectedCredentialProviderVersion: 'Microsoft.linux-arm64.NuGet.CredentialProvider'
-      validateKeyringBinary: false
-- job: LinuxInstallNet8osxarm64
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - template: validate-setup-bash.yml@self
-    parameters:
-      repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
-      scriptEnvVariables: |
-        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64
-      expectedCredentialProviderVersion: 'Microsoft.osx-arm64.NuGet.CredentialProvider'
-      validateKeyringBinary: false
-- job: LinuxInstallNet8osxx64
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - template: validate-setup-bash.yml@self
-    parameters:
-      repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
-      scriptEnvVariables: |
-        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64
-      expectedCredentialProviderVersion: 'Microsoft.osx-x64.NuGet.CredentialProvider'
+      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
       validateKeyringBinary: false
 - job: MacOSNet8Install
   pool:

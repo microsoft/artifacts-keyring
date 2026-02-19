@@ -117,22 +117,6 @@ jobs:
       python3 -m pip install --upgrade pip
       pip install cibuildwheel
     displayName: 'Install build dependencies'
-  
-  - script: |
-      cibuildwheel --output-dir wheel-linux-x64
-    displayName: 'Build linux-x64 wheels'
-    env:
-      CIBW_ARCHS_LINUX: "x86_64"
-      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
-      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
-      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
-  
-  - ${{ if eq(parameters.publish, true) }}:
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish linux-x64 wheels'
-      inputs:
-        pathToPublish: 'wheel-linux-x64'
-        artifactName: 'wheels-linux-x64'
 
 - job: BuildSDist
   displayName: 'Build Source Distribution'

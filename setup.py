@@ -37,14 +37,13 @@ def get_runtime_identifier():
     os_system = platform.system().lower()
     os_arch = platform.machine().lower()
     
-    if os_system == "linux":
-        runtime_id = "linux"
-    elif os_system == "darwin":
+    if os_system == "darwin":
         runtime_id = "osx"
     elif os_system == "windows":
         runtime_id = "win"
     else:
-        print(f"Warning: Unsupported OS: {os_system}. Please set the {CREDENTIAL_PROVIDER_RID_VAR_NAME} environment variable to specify a runtime identifier.")
+        # Linux and other platforms use the default non-platform-specific Net8 provider
+        print(f"OS '{os_system}' does not have a python supported platform-specific build. Using default Net8 credential provider.")
         return ""
 
     if "aarch64" in os_arch or "arm64" in os_arch:
@@ -130,16 +129,17 @@ class KeyringDistribution(Distribution):
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.abspath(__file__))
-    dest = os.path.join(root, "src", "artifacts_keyring", "plugins")
+    dest = os.path.join(root, "src", "artifacts_keyring")
+    plugins_dir = os.path.join(dest, "plugins")
 
     # Clean any previous build artifacts
-    if os.path.exists(dest):
-        print("Removing previous plugins artifacts in ", dest)
-        shutil.rmtree(dest)
+    if os.path.exists(plugins_dir):
+        print("Removing previous plugins artifacts in ", plugins_dir)
+        shutil.rmtree(plugins_dir)
 
     download_credential_provider(dest)
 
-	# Fix for liblttng-ust.so.0 not being found on Debian 12 and later.
+    # Fix for liblttng-ust.so.0 not being found on Debian 12 and later.
     # See https://github.com/dotnet/runtime/issues/57784 for more info.
     clr_trace_path = os.path.join(
         dest,
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     if os.path.exists(clr_trace_path):
         print("Removing libcoreclrtraceptprovider.so from plugins directory")
         os.remove(clr_trace_path)
-    
+
     setup(
         version=get_version(root),
         cmdclass={

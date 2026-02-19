@@ -20,9 +20,8 @@ skip = ["*-win32"]
 archs = ["x86_64", "arm64"]
 skip = ["*-macosx_i386", "*-macosx_x86"]
 
-[tool.cibuildwheel.linux]
-archs = ["x86_64", "aarch64"]
-# musllinux will also be skipped as most distros are manylinux compatible
-skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*"]
-manylinux-x86_64-image = "manylinux_2_34"
-manylinux-aarch64-image = "manylinux_2_34"
+# Linux is distributed as a source distribution (sdist) only.
+# For self-contained linux, users must install the linux-* artifacts-credprovider separately 
+# and set the env variable ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH to point to their local 
+# credential provider install.
+# [tool.cibuildwheel.linux] - removed, no platform wheels built for Linux

@@ -62,6 +62,45 @@ Check out that link to the GitHub repo for more information on configuration opt
 
 - `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue 
 interactive prompts.
+- `ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH`: The full path to the Azure Artifacts Credential Provider
+executable (e.g. `~/.dotnet/tools/CredentialProvider.Microsoft` or 
+`~/.nuget/plugins/netcore/CredentialProvider.Microsoft/CredentialProvider.Microsoft`).
+When set, this path is used instead of the bundled credential provider on all platforms.
+On Linux, where only a source distribution is available with the non-self-contained .NET 8 credential provider,
+this variable can be used to point to a self-contained platform-specific binary (e.g. `linux-x64`) that does
+not require a .NET runtime, but does require additional linux dependencies.
+The executable at the provided path must already have the appropriate permissions set (e.g. `chmod +x`).
+
+#### Linux setup
+
+On Linux, `artifacts-keyring` is distributed as a source distribution (sdist) that bundles the default
+(non-platform-specific) .NET 8 artifacts-credential provider. This requires .NET 8 or higher [.NET runtime or sdk](https://learn.microsoft.com/dotnet/core/install/)
+to be installed.
+
+Alternatively, to remove the .NET runtime/sdk dependency for supported linux platforms, you can install a self-contained version of the [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
+and its linux package dependencies separately and point `artifacts-keyring` to it using the `ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH` environment variable:
+
+**Example: Installing the artifacts-credprovider as a .NET tool**
+```bash
+# Install the credential provider as a global .NET tool
+dotnet tool install -g Microsoft.NuGet.CredentialProvider
+
+# Point artifacts-keyring to the executable
+export ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH=~/.dotnet/tools/CredentialProvider.Microsoft
+```
+
+**Example: Using a self-contained credential provider binary**
+```bash
+# Download and install the credential provider using the install script
+wget -qO- https://aka.ms/install-artifacts-credprovider.sh | bash
+
+# Point artifacts-keyring to the executable
+export ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH=~/.nuget/plugins/netcore/CredentialProvider.Microsoft/CredentialProvider.Microsoft
+```
+Once set, `pip` and `twine` commands work as usual:
+```bash
+pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/simple
+```
 
 ### Build Environment Variables
 
