@@ -109,6 +109,60 @@ self-contained .NET version of the Azure Artifacts Credential Provider.
 - `ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC`: Controls whether or not to build the non-self-contained 
 .NET 8 version of keyring.
 
+## Troubleshooting
+
+### Enabling credential provider logs
+
+For debug logs of the artifacts-credprovider, enable file logging by setting the `ARTIFACTS_CREDENTIALPROVIDER_LOG_PATH` environment variable to an absolute path before running `pip` or `twine`:
+
+**Windows (PowerShell):**
+```powershell
+$env:ARTIFACTS_CREDENTIALPROVIDER_LOG_PATH = "C:\path\to\credprovider.log"
+pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/simple
+```
+
+**Linux/macOS:**
+```bash
+export ARTIFACTS_CREDENTIALPROVIDER_LOG_PATH=/path/to/credprovider.log
+pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/simple
+```
+
+### Clearing credential caches to force a full token refresh
+
+The credential provider uses two cache layers. To force re-authentication, clear both:
+
+**1. Session Token Cache** — stores the short-lived token used by pip/twine:
+
+Windows (PowerShell):
+```powershell
+Remove-Item "$env:LocalAppData\MicrosoftCredentialProvider\SessionTokenCache.dat" -ErrorAction SilentlyContinue
+```
+
+Linux/macOS:
+```bash
+rm -f ~/.local/share/MicrosoftCredentialProvider/SessionTokenCache.dat
+```
+
+**2. MSAL Token Cache** — stores the underlying Azure identity token used to acquire new session tokens:
+
+Windows (PowerShell):
+```powershell
+Remove-Item -Recurse -Force "$env:LocalAppData\.IdentityService" -ErrorAction SilentlyContinue
+```
+
+Linux/macOS:
+```bash
+rm -rf ~/.local/.IdentityService
+```
+
+**3. pip HTTP cache** — stores downloaded package metadata and wheels; clearing ensures pip re-fetches from the feed:
+
+```bash
+pip cache purge
+```
+
+The next pip or twine command should force a token refresh.
+
 ## Local development
 
 1. Install build dependencies with `pip install .`
