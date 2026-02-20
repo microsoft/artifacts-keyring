@@ -20,6 +20,7 @@ class CredentialProvider(object):
     _CREDENTIALPROVIDER_PATH_VAR_NAME = "ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH"
     _PLUGINS_ROOT = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
+        "bin",
         "plugins",
         "netcore",
         "CredentialProvider.Microsoft"

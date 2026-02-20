@@ -17,7 +17,7 @@ venv/
 ENV/
 
 # FCIB
-src/artifacts_keyring/plugins/
+src/artifacts_keyring/bin/
 
 # Pytest
 .pytest_cache/

@@ -129,7 +129,7 @@ class KeyringDistribution(Distribution):
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.abspath(__file__))
-    dest = os.path.join(root, "src", "artifacts_keyring")
+    dest = os.path.join(root, "src", "artifacts_keyring", "bin")
     plugins_dir = os.path.join(dest, "plugins")
 
     # Clean any previous build artifacts
