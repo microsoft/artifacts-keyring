@@ -98,26 +98,6 @@ jobs:
         pathToPublish: 'wheel-osx-arm64'
         artifactName: 'wheels-osx-arm64'
 
-- job: BuildLinux64
-  displayName: 'Build Linux x64 Wheels'
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - script: |
-      sudo apt-get update -y
-      sudo apt-get install -y python3-full
-    displayName: 'Install build tools'
-
-  - task: PipAuthenticate@1
-    displayName: 'Pip Authenticate'
-    inputs:
-      artifactFeeds: ${{ parameters.artifactFeed}}
-  
-  - script: |
-      python3 -m pip install --upgrade pip
-      pip install cibuildwheel
-    displayName: 'Install build dependencies'
-
 - job: BuildSDist
   displayName: 'Build Source Distribution'
   pool:
