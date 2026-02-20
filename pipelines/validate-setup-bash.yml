@@ -35,7 +35,7 @@ steps:
 
     echo "Checking for Credential Provider installation..."
 
-    if [ ! -d "./src/artifacts_keyring/plugins/netcore/CredentialProvider.Microsoft" ]; then
+    if [ ! -d "./src/artifacts_keyring/bin/plugins/netcore/CredentialProvider.Microsoft" ]; then
       echo "Credential provider plugin directory not found"
       exit 1
     fi
