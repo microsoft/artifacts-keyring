@@ -17,8 +17,8 @@ stages:
   - template: build-wheels.yml
     parameters:
       publish: true
-      artifactFeed: 'PublicBuilds/artifacts-credprovider'
-      cibuildwheelPythonUrl: 'https://pkgs.dev.azure.com/artifacts-public/PublicBuilds/_packaging/artifacts-credprovider/pypi/simple/'
+      artifactFeed: 'Azure Artifacts/Azure-Artifacts'
+      cibuildwheelPythonUrl: 'https://user:$(System.AccessToken)@pkgs.dev.azure.com/mseng/Azure-Artifacts/_packaging/Azure-Artifacts/pypi/simple/'
 
 - stage: Validate
   displayName: 'Validate Setup Binary Selection'
@@ -26,4 +26,4 @@ stages:
   jobs:
   - template: validate-setup.yml
     parameters:
-      artifactFeed: 'PublicBuilds/artifacts-credprovider'
+      artifactFeed: 'Azure Artifacts/Azure-Artifacts'
