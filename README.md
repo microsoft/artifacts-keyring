@@ -1,5 +1,5 @@
 ## NOTE
-'artifacts-keyring' is a relatively thin wrapper around [artifacts-credprovider](https://github.com/microsoft/artifacts-credprovider).  Make sure to also look at that repository for more information about different scenarios. For example:
+'artifacts-keyring' is a relatively thin wrapper around [artifacts-credprovider](https://github.com/microsoft/artifacts-credprovider). Make sure to also look at that repository for more information about different scenarios. For example:
 
 * [Environment variable to explicitly override tokens](https://github.com/microsoft/artifacts-credprovider)
 * [Safely using credentials in docker](https://github.com/dotnet/dotnet-docker/blob/master/documentation/scenarios/nuget-credentials.md#using-the-azure-artifact-credential-provider)
@@ -38,6 +38,27 @@ Artifacts, the following requirements must be met:
   learn.microsoft.com/dotnet/core/install/) for installation guideline.
   ```
 
+#### macOS requirements
+
+The platform-specific macOS wheels require **macOS 11.0 or higher**. This is because the bundled MSAL
+native library (`msalruntime.dylib`) targets macOS 11.0+, which is encoded into the wheel's platform tag
+(e.g. `macosx_11_0_arm64`). pip will only install the platform-specific wheel on macOS 11.0+.
+
+On macOS 10.x, no matching platform-specific wheel will be found and pip will fall back to the source
+distribution (sdist), which requires a [.NET 8 runtime or sdk](https://learn.microsoft.com/dotnet/core/install/)
+to be installed separately.
+
+#### Linux requirements
+
+On Linux, `artifacts-keyring` is distributed as a source distribution (sdist) that bundles the default
+(non-platform-specific) .NET 8 artifacts-credential provider. This requires .NET 8 or higher [.NET runtime or sdk](https://learn.microsoft.com/dotnet/core/install/)
+to be installed.
+
+The bundled MSAL native library (`libmsalruntime.so`) also requires additional Linux package dependencies.
+See the [MSAL .NET Linux package dependencies](https://learn.microsoft.com/en-us/entra/msal/dotnet/acquiring-tokens/desktop-mobile/linux-dotnet-sdk?tabs=ubuntudep#package-dependencies) for the full list.
+
+See [Linux credential provider setup](#linux-credential-provider-setup) for advanced options to remove the .NET runtime dependency.
+
 ### Publishing packages to an Azure Artifacts feed
 Once `artifacts-keyring` is installed, to publish a package, use the following `twine` 
 command, replacing **<org_name>** and **<feed_name>** with your own:
@@ -71,23 +92,11 @@ this variable can be used to point to a self-contained platform-specific binary 
 not require a .NET runtime, but does require additional linux dependencies.
 The executable at the provided path must already have the appropriate permissions set (e.g. `chmod +x`).
 
-#### Linux setup
+#### Linux credential provider setup
 
-On Linux, `artifacts-keyring` is distributed as a source distribution (sdist) that bundles the default
-(non-platform-specific) .NET 8 artifacts-credential provider. This requires .NET 8 or higher [.NET runtime or sdk](https://learn.microsoft.com/dotnet/core/install/)
-to be installed.
-
-Alternatively, to remove the .NET runtime/sdk dependency for supported linux platforms, you can install a self-contained version of the [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
-and its linux package dependencies separately and point `artifacts-keyring` to it using the `ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH` environment variable:
-
-**Example: Installing the artifacts-credprovider as a .NET tool**
-```bash
-# Install the credential provider as a global .NET tool
-dotnet tool install -g Microsoft.NuGet.CredentialProvider
-
-# Point artifacts-keyring to the executable
-export ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH=~/.dotnet/tools/CredentialProvider.Microsoft
-```
+To remove the .NET runtime/sdk dependency for supported Linux platforms, you can install a self-contained version of the [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
+and its Linux package dependencies separately and point `artifacts-keyring` to it using the `ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH` environment variable.
+The self-contained binary still requires the [MSAL .NET Linux package dependencies](https://learn.microsoft.com/entra/msal/dotnet/acquiring-tokens/desktop-mobile/linux-dotnet-sdk?tabs=ubuntudep#package-dependencies).
 
 **Example: Using a self-contained credential provider binary**
 ```bash
