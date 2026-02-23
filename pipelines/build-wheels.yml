@@ -21,7 +21,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
       python -m pip install --upgrade pip
@@ -57,7 +57,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
       python3 -m pip install --upgrade pip
@@ -82,7 +82,7 @@ jobs:
       CIBW_ARCHS_MACOS: "arm64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64"
       MACOSX_DEPLOYMENT_TARGET: "11.0"
-      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}}}
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
       CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
@@ -111,7 +111,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: ${{ parameters.artifactFeed}}
+      artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
       python -m pip install --upgrade pip build
