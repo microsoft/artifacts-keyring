@@ -14,7 +14,7 @@ steps:
 - task: PipAuthenticate@1
   displayName: 'Pip authenticate'
   inputs:
-    artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+    artifactFeeds: 'PublicBuilds/artifacts-credprovider'
 - script: pip install build
   displayName: 'Install dependencies'
 - bash: |
