@@ -65,10 +65,9 @@ jobs:
       artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
-      python -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
-      pip install cibuildwheel
+      python3 -m pip install --upgrade pip
+      # Work around for https://github.com/pypa/cibuildwheel/issues/2649
+      pip install cibuildwheel --only-binary patchelf
     displayName: 'Install build dependencies'
   
   - script: |
