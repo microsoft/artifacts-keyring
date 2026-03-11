@@ -5,8 +5,11 @@ resources:
 pool:
   vmImage: windows-latest
 
-trigger:
-- master
+pr:
+  branches:
+    include:
+    - main
+    - releases/*
 
 stages:
 - stage: BuildWheels
