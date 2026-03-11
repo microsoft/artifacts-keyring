@@ -24,3 +24,5 @@ stages:
   dependsOn: [] 
   jobs:
   - template: validate-setup.yml
+    parameters:
+      artifactFeed: PublicBuilds/artifacts-credprovider
