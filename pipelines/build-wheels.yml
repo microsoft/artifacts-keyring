@@ -2,6 +2,10 @@ parameters:
 - name: publish
   type: boolean
   default: false
+- name: artifactFeed
+  type: string
+- name: cibuildwheelPythonUrl
+  type: string
 
 jobs:
 - job: BuildWindows
@@ -14,10 +18,13 @@ jobs:
       versionSpec: '3.x'
       addToPath: true
 
+  - task: NuGetAuthenticate@1
+    displayName: 'NuGet Authenticate'
+
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
       python -m pip install --upgrade pip
@@ -32,6 +39,8 @@ jobs:
     env:
       CIBW_ARCHS_WINDOWS: "AMD64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -53,13 +62,12 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
-      python -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
-      pip install cibuildwheel
+      python3 -m pip install --upgrade pip
+      # Work around for https://github.com/pypa/cibuildwheel/issues/2649
+      pip install cibuildwheel --only-binary patchelf
     displayName: 'Install build dependencies'
   
   - script: |
@@ -69,6 +77,8 @@ jobs:
       CIBW_ARCHS_MACOS: "x86_64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64"
       MACOSX_DEPLOYMENT_TARGET: "10.15"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
 
   - script: |
       cibuildwheel --output-dir wheel-osx-arm64
@@ -77,6 +87,8 @@ jobs:
       CIBW_ARCHS_MACOS: "arm64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64"
       MACOSX_DEPLOYMENT_TARGET: "10.15"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -104,7 +116,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
       python3 -m pip install --upgrade pip
@@ -119,6 +131,8 @@ jobs:
     env:
       CIBW_ARCHS_LINUX: "x86_64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -140,7 +154,7 @@ jobs:
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
     inputs:
-      artifactFeeds: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
       python -m pip install --upgrade pip build
