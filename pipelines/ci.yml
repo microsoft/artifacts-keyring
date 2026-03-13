@@ -6,6 +6,8 @@ schedules:
     include: 
     - master
 
+trigger: master
+
 resources:
 - repo: self
 
@@ -17,8 +19,8 @@ stages:
   - template: build-wheels.yml
     parameters:
       publish: true
-      artifactFeed: 'PipelineTools/artifacts-credprovider'
-      cibuildwheelPythonUrl: 'https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/artifacts-credprovider/pypi/simple/'
+      artifactFeed: PublicBuilds/artifacts-credprovider
+      cibuildwheelPythonUrl: https://pkgs.dev.azure.com/artifacts-public/PublicBuilds/_packaging/artifacts-credprovider/pypi/simple/
 
 - stage: Validate
   displayName: 'Validate Setup Binary Selection'
@@ -26,4 +28,4 @@ stages:
   jobs:
   - template: validate-setup.yml
     parameters:
-      artifactFeed: 'Azure Artifacts/Azure-Artifacts'
+      artifactFeed: PublicBuilds/artifacts-credprovider

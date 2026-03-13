@@ -12,8 +12,11 @@ resources:
 pool:
   vmImage: windows-latest
 
-trigger:
-- master
+pr:
+  branches:
+    include:
+    - master
+    - releases/*
 
 stages:
 - stage: BuildWheels
@@ -23,8 +26,8 @@ stages:
   - template: build-wheels.yml
     parameters:
       publish: false # Enable this to publish wheels to the build artifacts for validation
-      artifactFeed: 'PipelineTools/artifacts-credprovider'
-      cibuildwheelPythonUrl: 'https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/artifacts-credprovider/pypi/simple/'
+      artifactFeed: PublicBuilds/artifacts-credprovider
+      cibuildwheelPythonUrl: https://pkgs.dev.azure.com/artifacts-public/PublicBuilds/_packaging/artifacts-credprovider/pypi/simple/
 
 - stage: Validate
   displayName: 'Validate Setup Binary Selection'
@@ -32,4 +35,4 @@ stages:
   jobs:
   - template: validate-setup.yml
     parameters:
-      artifactFeed: 'PipelineTools/artifacts-credprovider'
+      artifactFeed: PublicBuilds/artifacts-credprovider

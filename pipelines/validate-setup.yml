@@ -10,9 +10,9 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.win-x64.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: WindowsInstallNet8Fallback
   pool:
     vmImage: windows-latest
@@ -20,22 +20,21 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC;]true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
-- job: WindowsInstallLinux64
+      artifactFeed: ${{ parameters.artifactFeed }}
+- job: LinuxInstallNet8Fallback
   pool:
-    vmImage: windows-latest
+    vmImage: ubuntu-latest
   steps:
-  - template: validate-setup-ps.yml@self
+  - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: |
-        Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]linux-x64"
-      expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
-      validateKeyringBinary: false
+        export ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC=true
+      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: LinuxInstallNet8
   pool:
     vmImage: ubuntu-latest
@@ -43,10 +42,21 @@ jobs:
   - template: validate-setup-bash.yml@self
     parameters:
       repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed }}
       scriptEnvVariables: ''
-      expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
+      expectedCredentialProviderVersion: 'Microsoft.linux-x64.NuGet.CredentialProvider'
+- job: LinuxInstallNet8linuxarm64
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - template: validate-setup-bash.yml@self
+    parameters:
+      repo: self
+      scriptEnvVariables: |
+        export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
+      expectedCredentialProviderVersion: 'Microsoft.linux-arm64.NuGet.CredentialProvider'
       validateKeyringBinary: false
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: MacOSNet8Install
   pool:
     vmImage: macos-latest
@@ -54,9 +64,9 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.osx-x64.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: MacOSArm64Net8Install
   pool:
     vmImage: macos-latest
@@ -64,7 +74,7 @@ jobs:
   - template: validate-setup-ps.yml@self
     parameters:
       repo: self
-      artifactFeed: ${{ parameters.artifactFeed}}
+      artifactFeed: ${{ parameters.artifactFeed }}
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]osx-arm64"
       expectedCredentialProviderVersion: 'Microsoft.osx-arm64.NuGet.CredentialProvider'
