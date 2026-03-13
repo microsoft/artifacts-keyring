@@ -1,3 +1,7 @@
+parameters:
+- name: artifactFeed
+  type: string
+
 jobs:
 - job: WindowsInstallDefault
   pool:
@@ -8,6 +12,7 @@ jobs:
       repo: self
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.Net8.win-x64.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: WindowsInstallNet8Fallback
   pool:
     vmImage: windows-latest
@@ -18,6 +23,7 @@ jobs:
       scriptEnvVariables: |
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC;]true"
       expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: WindowsInstallLinux64
   pool:
     vmImage: windows-latest
@@ -29,6 +35,7 @@ jobs:
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]linux-x64"
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
       validateKeyringBinary: false
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: LinuxInstalllNet8Fallback
   pool:
     vmImage: ubuntu-latest
@@ -39,6 +46,7 @@ jobs:
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC=true
       expectedCredentialProviderVersion: 'Microsoft.Net8.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: LinuxInstallNet8
   pool:
     vmImage: ubuntu-latest
@@ -48,6 +56,7 @@ jobs:
       repo: self
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: LinuxInstallNet8linuxx64
   pool:
     vmImage: ubuntu-latest
@@ -58,6 +67,7 @@ jobs:
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-x64.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: LinuxInstallNet8linuxarm64
   pool:
     vmImage: ubuntu-latest
@@ -69,6 +79,7 @@ jobs:
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
       expectedCredentialProviderVersion: 'Microsoft.Net8.linux-arm64.NuGet.CredentialProvider'
       validateKeyringBinary: false
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: LinuxInstallNet8osxarm64
   pool:
     vmImage: ubuntu-latest
@@ -80,6 +91,7 @@ jobs:
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
       validateKeyringBinary: false
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: LinuxInstallNet8osxx64
   pool:
     vmImage: ubuntu-latest
@@ -91,6 +103,7 @@ jobs:
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
       validateKeyringBinary: false
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: MacOSNet8Install
   pool:
     vmImage: macos-latest
@@ -100,6 +113,7 @@ jobs:
       repo: self
       scriptEnvVariables: ''
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-x64.NuGet.CredentialProvider'
+      artifactFeed: ${{ parameters.artifactFeed }}
 - job: MacOSArm64Net8Install
   pool:
     vmImage: macos-latest
@@ -111,4 +125,5 @@ jobs:
         Write-Host "##vso[task.setvariable variable=ARTIFACTS_CREDENTIAL_PROVIDER_RID;]osx-arm64"
       expectedCredentialProviderVersion: 'Microsoft.Net8.osx-arm64.NuGet.CredentialProvider'
       validateKeyringBinary: false
+      artifactFeed: ${{ parameters.artifactFeed }}
   
