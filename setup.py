@@ -69,7 +69,7 @@ def get_os_runtime_url(runtime_var):
         return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".{runtime_var}")
 
     if "linux" in runtime_var:
-        return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".NoBroker.{runtime_var}")
+        return CREDENTIAL_PROVIDER_NET8.replace(".Net8.", f".{runtime_var}.Brokerless.")
 
     return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".{runtime_var}")
 

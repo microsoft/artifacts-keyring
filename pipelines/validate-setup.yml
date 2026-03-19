@@ -67,7 +67,7 @@ jobs:
       repo: self
       artifactFeed: ${{ parameters.artifactFeed }}
       scriptEnvVariables: ''
-      expectedCredentialProviderVersion: 'Microsoft.NoBroker.linux-x64.NuGet.CredentialProvider'
+      expectedCredentialProviderVersion: 'Microsoft.linux-x64.Brokerless.NuGet.CredentialProvider'
 - job: LinuxInstallNet8linuxarm64
   pool:
     vmImage: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
       repo: self
       scriptEnvVariables: |
         export ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64
-      expectedCredentialProviderVersion: 'Microsoft.NoBroker.linux-arm64.NuGet.CredentialProvider'
+      expectedCredentialProviderVersion: 'Microsoft.linux-arm64.Brokerless.NuGet.CredentialProvider'
       validateKeyringBinary: false
       artifactFeed: ${{ parameters.artifactFeed }}
 - job: MacOSNet8Install
