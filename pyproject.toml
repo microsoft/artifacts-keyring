@@ -21,4 +21,5 @@ skip = ["*-macosx_i386", "*-macosx_x86"]
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64", "aarch64"]
-skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*"]
+skip = ["*-manylinux_i686", "*-musllinux*"]
+manylinux-aarch64-image = "manylinux_2_28"
