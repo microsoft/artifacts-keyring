@@ -39,6 +39,24 @@ jobs:
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x64"
       CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
       CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+
+  - script: |
+      cibuildwheel --output-dir wheel-win-x86
+    displayName: 'Build win-x86 wheels'
+    env:
+      CIBW_ARCHS_WINDOWS: "x86"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x86"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+
+  - script: |
+      cibuildwheel --output-dir wheel-win-arm64
+    displayName: 'Build win-arm64 wheels'
+    env:
+      CIBW_ARCHS_WINDOWS: "ARM64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-arm64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -46,6 +64,18 @@ jobs:
       inputs:
         pathToPublish: 'wheel-win-x64'
         artifactName: 'wheels-win-x64'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish win-x86 wheels'
+      inputs:
+        pathToPublish: 'wheel-win-x86'
+        artifactName: 'wheels-win-x86'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish win-arm64 wheels'
+      inputs:
+        pathToPublish: 'wheel-win-arm64'
+        artifactName: 'wheels-win-arm64'
 
 - job: BuildOSX
   displayName: 'Build macOS Wheels'
@@ -100,6 +130,57 @@ jobs:
       inputs:
         pathToPublish: 'wheel-osx-arm64'
         artifactName: 'wheels-osx-arm64'
+
+- job: BuildLinux
+  displayName: 'Build Linux Wheels'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - task: PipAuthenticate@1
+    displayName: 'Pip Authenticate'
+    inputs:
+      artifactFeeds: ${{ parameters.artifactFeed }}
+  
+  - script: |
+      python -m pip install --upgrade pip
+      pip install cibuildwheel
+    displayName: 'Install build dependencies'
+  
+  - script: |
+      cibuildwheel --output-dir wheel-linux-x64
+    displayName: 'Build linux-x64 wheels'
+    env:
+      CIBW_ARCHS_LINUX: "x86_64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-x64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+
+  - script: |
+      cibuildwheel --output-dir wheel-linux-arm64
+    displayName: 'Build linux-arm64 wheels'
+    env:
+      CIBW_ARCHS_LINUX: "aarch64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=linux-arm64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+  
+  - ${{ if eq(parameters.publish, true) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish linux-x64 wheels'
+      inputs:
+        pathToPublish: 'wheel-linux-x64'
+        artifactName: 'wheels-linux-x64'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish linux-arm64 wheels'
+      inputs:
+        pathToPublish: 'wheel-linux-arm64'
+        artifactName: 'wheels-linux-arm64'
 
 - job: BuildSDist
   displayName: 'Build Source Distribution'

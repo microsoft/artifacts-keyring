@@ -18,7 +18,7 @@ from setuptools import Distribution, setup
 from setuptools.command.build_py import build_py
 from setuptools.command.bdist_wheel import bdist_wheel
 
-CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v2.0.0/"
+CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v2.0.1/"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8_ZIP = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.zip"
 CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC"
@@ -41,18 +41,18 @@ def get_runtime_identifier():
         runtime_id = "osx"
     elif os_system == "windows":
         runtime_id = "win"
+    elif os_system == "linux":
+        runtime_id = "linux"
     else:
-        # Linux and other platforms use the default non-platform-specific Net8 provider
         print(f"OS '{os_system}' does not have a python supported platform-specific build. Using default Net8 credential provider.")
         return ""
 
     if "aarch64" in os_arch or "arm64" in os_arch:
-        if (os_system == "windows"): # windows on ARM runs x64 binaries
-            runtime_id += "-x64"
-        else:
-            runtime_id += "-arm64"
+        runtime_id += "-arm64"
     elif "x86_64" in os_arch or "amd64" in os_arch:
         runtime_id += "-x64"
+    elif ("x86" in os_arch or "i386" in os_arch or "i686" in os_arch) and os_system == "windows":
+        runtime_id += "-x86"
     else:
         print(f"Warning: Unsupported architecture: {os_arch}. Please set the {CREDENTIAL_PROVIDER_RID_VAR_NAME} environment variable to specify a runtime identifier.")
         return ""
@@ -67,6 +67,9 @@ def get_os_runtime_url(runtime_var):
 
     if "osx" in runtime_var:
         return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".{runtime_var}")
+
+    if "linux" in runtime_var:
+        return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".NoBroker.{runtime_var}")
 
     return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".{runtime_var}")
 
