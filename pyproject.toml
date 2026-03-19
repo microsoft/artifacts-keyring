@@ -21,3 +21,4 @@ skip = ["*-macosx_i386", "*-macosx_x86"]
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64", "aarch64"]
+skip = ["*-manylinux_i686", "*-manylinux2014_i686", "*-musllinux*"]
