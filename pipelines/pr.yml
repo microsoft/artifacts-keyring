@@ -13,10 +13,8 @@ pool:
   vmImage: windows-latest
 
 pr:
-  branches:
-    include:
-    - master
-    - releases/*
+- master
+
 
 stages:
 - stage: BuildWheels
