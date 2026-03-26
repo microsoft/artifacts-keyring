@@ -18,7 +18,7 @@ from setuptools import Distribution, setup
 from setuptools.command.build_py import build_py
 from setuptools.command.bdist_wheel import bdist_wheel
 
-CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v1.4.1/"
+CREDENTIAL_PROVIDER_BASE = "https://github.com/Microsoft/artifacts-credprovider/releases/download/v2.0.1/"
 CREDENTIAL_PROVIDER_NET8 = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.tar.gz"
 CREDENTIAL_PROVIDER_NET8_ZIP = CREDENTIAL_PROVIDER_BASE + "Microsoft.Net8.NuGet.CredentialProvider.zip"
 CREDENTIAL_PROVIDER_NON_SC_VAR_NAME = "ARTIFACTS_CREDENTIAL_PROVIDER_NON_SC"
@@ -37,23 +37,22 @@ def get_runtime_identifier():
     os_system = platform.system().lower()
     os_arch = platform.machine().lower()
     
-    if os_system == "linux":
-        runtime_id = "linux"
-    elif os_system == "darwin":
+    if os_system == "darwin":
         runtime_id = "osx"
     elif os_system == "windows":
         runtime_id = "win"
+    elif os_system == "linux":
+        runtime_id = "linux"
     else:
-        print(f"Warning: Unsupported OS: {os_system}. Please set the {CREDENTIAL_PROVIDER_RID_VAR_NAME} environment variable to specify a runtime identifier.")
+        print(f"OS '{os_system}' does not have a python supported platform-specific build. Using default Net8 credential provider.")
         return ""
 
     if "aarch64" in os_arch or "arm64" in os_arch:
-        if (os_system == "windows"): # windows on ARM runs x64 binaries
-            runtime_id += "-x64"
-        else:
-            runtime_id += "-arm64"
+        runtime_id += "-arm64"
     elif "x86_64" in os_arch or "amd64" in os_arch:
         runtime_id += "-x64"
+    elif ("x86" in os_arch or "i386" in os_arch or "i686" in os_arch) and os_system == "windows":
+        runtime_id += "-x86"
     else:
         print(f"Warning: Unsupported architecture: {os_arch}. Please set the {CREDENTIAL_PROVIDER_RID_VAR_NAME} environment variable to specify a runtime identifier.")
         return ""
@@ -67,9 +66,12 @@ def get_os_runtime_url(runtime_var):
         return CREDENTIAL_PROVIDER_NET8
 
     if "osx" in runtime_var:
-        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".Net8.{runtime_var}")
+        return CREDENTIAL_PROVIDER_NET8_ZIP.replace(".Net8", f".{runtime_var}")
 
-    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".Net8.{runtime_var}")
+    if "linux" in runtime_var:
+        return CREDENTIAL_PROVIDER_NET8.replace(".Net8.", f".{runtime_var}.Brokerless.")
+
+    return CREDENTIAL_PROVIDER_NET8.replace(".Net8", f".{runtime_var}")
 
 def get_download_url():
     # When building the platform wheels in CI, use the self-contained version of the credential provider.
@@ -130,16 +132,17 @@ class KeyringDistribution(Distribution):
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.abspath(__file__))
-    dest = os.path.join(root, "src", "artifacts_keyring", "plugins")
+    dest = os.path.join(root, "src", "artifacts_keyring", "bin")
+    plugins_dir = os.path.join(dest, "plugins")
 
     # Clean any previous build artifacts
-    if os.path.exists(dest):
-        print("Removing previous plugins artifacts in ", dest)
-        shutil.rmtree(dest)
+    if os.path.exists(plugins_dir):
+        print("Removing previous plugins artifacts in ", plugins_dir)
+        shutil.rmtree(plugins_dir)
 
     download_credential_provider(dest)
 
-	# Fix for liblttng-ust.so.0 not being found on Debian 12 and later.
+    # Fix for liblttng-ust.so.0 not being found on Debian 12 and later.
     # See https://github.com/dotnet/runtime/issues/57784 for more info.
     clr_trace_path = os.path.join(
         dest,
@@ -151,7 +154,7 @@ if __name__ == "__main__":
     if os.path.exists(clr_trace_path):
         print("Removing libcoreclrtraceptprovider.so from plugins directory")
         os.remove(clr_trace_path)
-    
+
     setup(
         version=get_version(root),
         cmdclass={

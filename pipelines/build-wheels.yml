@@ -28,8 +28,6 @@ jobs:
   
   - script: |
       python -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
       pip install cibuildwheel
     displayName: 'Install build dependencies'
   
@@ -41,6 +39,24 @@ jobs:
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x64"
       CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
       CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+
+  - script: |
+      cibuildwheel --output-dir wheel-win-x86
+    displayName: 'Build win-x86 wheels'
+    env:
+      CIBW_ARCHS_WINDOWS: "x86"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-x86"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+
+  - script: |
+      cibuildwheel --output-dir wheel-win-arm64
+    displayName: 'Build win-arm64 wheels'
+    env:
+      CIBW_ARCHS_WINDOWS: "ARM64"
+      CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=win-arm64"
+      CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
+      CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
   - ${{ if eq(parameters.publish, true) }}:
     - task: PublishBuildArtifacts@1
@@ -48,6 +64,18 @@ jobs:
       inputs:
         pathToPublish: 'wheel-win-x64'
         artifactName: 'wheels-win-x64'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish win-x86 wheels'
+      inputs:
+        pathToPublish: 'wheel-win-x86'
+        artifactName: 'wheels-win-x86'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish win-arm64 wheels'
+      inputs:
+        pathToPublish: 'wheel-win-arm64'
+        artifactName: 'wheels-win-arm64'
 
 - job: BuildOSX
   displayName: 'Build macOS Wheels'
@@ -76,7 +104,7 @@ jobs:
     env:
       CIBW_ARCHS_MACOS: "x86_64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-x64"
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
       CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
       CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
 
@@ -86,7 +114,7 @@ jobs:
     env:
       CIBW_ARCHS_MACOS: "arm64"
       CIBW_ENVIRONMENT: "ARTIFACTS_CREDENTIAL_PROVIDER_RID=osx-arm64"
-      MACOSX_DEPLOYMENT_TARGET: "10.15"
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
       CIBW_CPYTHON_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
       CIBW_PYPY_STANDALONE_URL: ${{ parameters.cibuildwheelPythonUrl }}
   
@@ -103,15 +131,15 @@ jobs:
         pathToPublish: 'wheel-osx-arm64'
         artifactName: 'wheels-osx-arm64'
 
-- job: BuildLinux64
-  displayName: 'Build Linux x64 Wheels'
+- job: BuildLinux
+  displayName: 'Build Linux Wheels'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - script: |
-      sudo apt-get update -y
-      sudo apt-get install -y python3-full
-    displayName: 'Install build tools'
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
 
   - task: PipAuthenticate@1
     displayName: 'Pip Authenticate'
@@ -119,9 +147,7 @@ jobs:
       artifactFeeds: ${{ parameters.artifactFeed }}
   
   - script: |
-      python3 -m pip install --upgrade pip
-      pip install setuptools
-      pip install wheel
+      python -m pip install --upgrade pip
       pip install cibuildwheel
     displayName: 'Install build dependencies'
   
