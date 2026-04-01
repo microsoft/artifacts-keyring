@@ -39,15 +39,6 @@ class CredentialProvider(object):
             # not be self-contained (i.e. may require a .NET runtime to be installed)
             if os.path.exists(self._PLUGINS_ROOT):
                 exe_path = os.path.join(self._PLUGINS_ROOT, 'CredentialProvider.Microsoft')
-                try:
-                    if os.path.exists(exe_path):
-                        os.chmod(exe_path, 0o755)
-                except Exception as e:
-                    raise RuntimeError(
-                        "Failed to set executable permissions for the Credential Provider at "
-                        + self._PLUGINS_ROOT
-                        + ". Error: " + str(e)
-                    )
 
                 # If the directory contains a runtimes folder, the binary is not
                 # self-contained and requires a .NET install to run.
