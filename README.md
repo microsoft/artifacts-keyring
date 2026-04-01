@@ -83,6 +83,10 @@ Check out that link to the GitHub repo for more information on configuration opt
 
 - `ARTIFACTS_KEYRING_NONINTERACTIVE_MODE`: Controls whether the underlying credential provider can issue 
 interactive prompts.
+- `ARTIFACTS_KEYRING_VERBOSITY`: Sets the verbosity level of the underlying credential provider.
+Valid values: `Debug`, `Verbose`, `Information`, `Minimal`, `Warning`, `Error`. Defaults to `Information`.
+**Note:** Setting this to `Warning` or higher will suppress interactive authentication prompts
+(e.g. device code flow instructions). Use `Information` or lower when interactive login is needed.
 - `ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH`: The full path to the Azure Artifacts Credential Provider
 executable (e.g. `~/.dotnet/tools/CredentialProvider.Microsoft` or 
 `~/.nuget/plugins/netcore/CredentialProvider.Microsoft/CredentialProvider.Microsoft`).

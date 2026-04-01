@@ -18,6 +18,7 @@ from .support import Popen
 class CredentialProvider(object):
     _NON_INTERACTIVE_VAR_NAME = "ARTIFACTS_KEYRING_NONINTERACTIVE_MODE"
     _CREDENTIALPROVIDER_PATH_VAR_NAME = "ARTIFACTS_KEYRING_CREDENTIALPROVIDER_PATH"
+    _VERBOSITY_VAR_NAME = "ARTIFACTS_KEYRING_VERBOSITY"
     _PLUGINS_ROOT = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "bin",
@@ -105,6 +106,7 @@ class CredentialProvider(object):
         non_interactive = self._NON_INTERACTIVE_VAR_NAME in os.environ and \
             os.environ[self._NON_INTERACTIVE_VAR_NAME] and \
             str(os.environ[self._NON_INTERACTIVE_VAR_NAME]).lower() == "true"
+        verbosity = os.environ.get(self._VERBOSITY_VAR_NAME, "Information")
 
         with Popen(
             self.exe + [
@@ -112,7 +114,8 @@ class CredentialProvider(object):
                 "-IsRetry", str(is_retry),
                 "-NonInteractive", str(non_interactive),
                 "-CanShowDialog", "True",
-                "-OutputFormat", "Json"
+                "-OutputFormat", "Json",
+                "-Verbosity", verbosity
             ],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
