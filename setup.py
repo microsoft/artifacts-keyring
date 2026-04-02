@@ -155,6 +155,21 @@ if __name__ == "__main__":
         print("Removing libcoreclrtraceptprovider.so from plugins directory")
         os.remove(clr_trace_path)
 
+    # Set executable permissions on the credential provider binary at build time.
+    # This ensures the binary is already executable when packaged into the wheel,
+    # avoiding the need for os.chmod at runtime (which fails for restricted users).
+    # See https://github.com/microsoft/artifacts-keyring/issues/99
+    cred_provider_exe = os.path.join(
+        dest,
+        "plugins",
+        "netcore",
+        "CredentialProvider.Microsoft",
+        "CredentialProvider.Microsoft",
+    )
+    if os.path.exists(cred_provider_exe):
+        print("Setting executable permissions on", cred_provider_exe)
+        os.chmod(cred_provider_exe, 0o755)
+
     setup(
         version=get_version(root),
         cmdclass={
