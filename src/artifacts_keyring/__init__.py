@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 __author__ = "Microsoft Corporation <python@microsoft.com>"
-__version__ = "2.0.0rc2"
+__version__ = "2.0.0rc3"
 
 import warnings
 from .support import urlsplit
