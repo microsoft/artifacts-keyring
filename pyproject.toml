@@ -9,8 +9,6 @@ build-backend = "setuptools.build_meta"
 
 # For each platform below, don't build 32bit binaries, they aren't supported 
 # by the .NET credential provider plugin (except for win-x86 which is now supported)
-# cibuildwheel 3 will disable building pypy automatically
-enable = "pypy"
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64", "x86", "ARM64"]
