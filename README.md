@@ -30,7 +30,7 @@ Artifacts, the following requirements must be met:
 
 * pip version **19.2** or higher
 * twine version **1.13.0** or higher
-* python version **3.9** or higher
+* python version **3.10** or higher
 
   ```
   If no matching platform specific .whl is found when running pip install and the sdist is 

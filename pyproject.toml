@@ -3,7 +3,7 @@ requires = ["setuptools>=42", "wheel", "setuptools_scm>=6.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-# Build binaries for everything supported by cibuildwheel, Python >= 3.7
+# Build binaries for everything supported by cibuildwheel, Python >= 3.10
 # For local cibuildwheel debugging, you can build only a single version
 # build = ["cp313-*"]
 
